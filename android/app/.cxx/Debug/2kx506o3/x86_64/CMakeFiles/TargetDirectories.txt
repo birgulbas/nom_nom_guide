@@ -1,0 +1,2 @@
+C:/Users/beyzap/Documents/nom_nom_guide/android/app/.cxx/Debug/2kx506o3/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/beyzap/Documents/nom_nom_guide/android/app/.cxx/Debug/2kx506o3/x86_64/CMakeFiles/rebuild_cache.dir
