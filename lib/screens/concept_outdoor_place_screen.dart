@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ConceptOutdoorPlaceScreen extends StatelessWidget {
+  const ConceptOutdoorPlaceScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

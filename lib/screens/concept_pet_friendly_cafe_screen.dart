@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ConceptPetFriendlyCafeScreen extends StatelessWidget {
+  const ConceptPetFriendlyCafeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

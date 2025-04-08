@@ -13,18 +13,21 @@ import 'package:nom_nom_guide/screens/concept_themed_cafe_screen.dart';
 import 'package:nom_nom_guide/screens/concept_vegan_friendly_cafe_screen.dart';
 import 'package:nom_nom_guide/screens/concept_family_cafe_screen.dart';
 import 'package:nom_nom_guide/screens/concept_romantic_place_screen.dart';
+import 'package:nom_nom_guide/screens/concept_casual_cafe_screen.dart';
 import 'home_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
 
 class ConceptScreen extends StatefulWidget {
+  const ConceptScreen({super.key});
+
   @override
   _ConceptScreenState createState() => _ConceptScreenState();
 }
 
 class _ConceptScreenState extends State<ConceptScreen> {
-  int _selectedIndex = 0;
+  final int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
     Widget? nextPage;
@@ -76,21 +79,26 @@ class _ConceptScreenState extends State<ConceptScreen> {
           Expanded(
             child: ListView(
               padding: EdgeInsets.all(16),
-              children: [
-                _buildConceptTile(context, "Study Cafes", Icons.menu_book, Colors.orange.shade300, ConceptStudyCafeScreen()),
-                _buildConceptTile(context, "Family Cafes", Icons.family_restroom, Colors.green.shade300, ConceptFamilyCafeScreen()),
-                _buildConceptTile(context, "Romantic Places", Icons.favorite, Colors.pink.shade300, ConceptRomanticPlaceScreen()),
-                _buildConceptTile(context, "Luxury Cafe", Icons.emoji_events, Colors.deepPurple.shade300, ConceptLuxuryCafeScreen()),
-                _buildConceptTile(context, "Outdoor Place", Icons.park, Colors.teal.shade300, ConceptOutdoorPlaceScreen()),
-                _buildConceptTile(context, "Vegan Friendly Cafe", Icons.eco, Colors.lightGreen.shade400, ConceptVeganFriendlyCafeScreen()),
-                _buildConceptTile(context, "Pet Friendly Cafe", Icons.pets, Colors.cyan.shade400, ConceptPetFriendlyCafeScreen()),
-                _buildConceptTile(context, "Breakfast Places", Icons.breakfast_dining, Colors.brown.shade300, ConceptBreakfastPlaceScreen()),
-                _buildConceptTile(context, "Dessert Shop / Patisserie", Icons.cake, Colors.purple.shade300, ConceptDessertShopPatisserieScreen()),
+              children: [                            
                 _buildConceptTile(context, "Book Cafe", Icons.book, Colors.indigo.shade300, ConceptBookCafeScreen()),
+                _buildConceptTile(context, "Breakfast Places", Icons.breakfast_dining, Colors.brown.shade300, ConceptBreakfastPlaceScreen()),
+                _buildConceptTile(context, "Casual Cafe", Icons.local_cafe, Colors.blueGrey.shade300, ConceptCasualCafeScreen()),
                 _buildConceptTile(context, "Cozy Places", Icons.spa, Colors.red.shade200, ConceptCozyPlaceScreen()),
+                _buildConceptTile(context, "Dessert Shop / Patisserie", Icons.cake, Colors.purple.shade300, ConceptDessertShopPatisserieScreen()),
+                _buildConceptTile(context, "Family Cafes", Icons.family_restroom, Colors.green.shade300, ConceptFamilyCafeScreen()),
                 _buildConceptTile(context, "Fast Food", Icons.fastfood, Colors.amber.shade600, ConceptFastFoodScreen()),
-                _buildConceptTile(context, "Themed Cafe", Icons.brush, Colors.blue.shade300, ConceptThemedCafeScreen()),
+                _buildConceptTile(context, "Luxury Cafe", Icons.emoji_events, Colors.deepPurple.shade300, ConceptLuxuryCafeScreen()),
                 _buildConceptTile(context, "Music Cafe", Icons.music_note, Colors.deepOrange.shade200, ConceptMusicCafeScreen()),
+                _buildConceptTile(context, "Outdoor Place", Icons.park, Colors.teal.shade300, ConceptOutdoorPlaceScreen()),
+                _buildConceptTile(context, "Pet Friendly Cafe", Icons.pets, Colors.cyan.shade400, ConceptPetFriendlyCafeScreen()),
+                _buildConceptTile(context, "Romantic Places", Icons.favorite, Colors.pink.shade300, ConceptRomanticPlaceScreen()),
+                _buildConceptTile(context, "Study Cafes", Icons.menu_book, Colors.orange.shade300, ConceptStudyCafeScreen()),
+                _buildConceptTile(context, "Themed Cafe", Icons.brush, Colors.blue.shade300, ConceptThemedCafeScreen()),
+                _buildConceptTile(context, "Vegan Friendly Cafe", Icons.eco, Colors.lightGreen.shade400, ConceptVeganFriendlyCafeScreen()),
+
+
+
+
               ],
             ),
           ),

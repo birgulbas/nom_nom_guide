@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ConceptCasualCafeScreen extends StatelessWidget {
+  const ConceptCasualCafeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

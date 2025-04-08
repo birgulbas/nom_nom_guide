@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ConceptRomanticPlaceScreen extends StatelessWidget {
+  const ConceptRomanticPlaceScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
