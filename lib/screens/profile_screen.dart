@@ -3,7 +3,9 @@ import 'login_screen.dart';
 
 
 class ProfileScreen extends StatelessWidget {
-  final bool isLoggedIn = false; // TODO: Gerçek auth sistemine bağla
+  final bool isLoggedIn = false;
+
+  const ProfileScreen({super.key}); // TODO: Gerçek auth sistemine bağla
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +20,8 @@ class ProfileScreen extends StatelessWidget {
 }
 
 class NotLoggedInView extends StatelessWidget {
+  const NotLoggedInView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -48,6 +52,8 @@ class NotLoggedInView extends StatelessWidget {
 }
 
 class LoggedInView extends StatelessWidget {
+  const LoggedInView({super.key});
+
 
   @override
   Widget build(BuildContext context) {
