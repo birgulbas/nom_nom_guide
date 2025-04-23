@@ -27,11 +27,11 @@ class ApiServices {
     );
 
     print('Kategori GET: ${response.statusCode}');
-    print('Kategori BODY: ${response.body}');
 
     if (response.statusCode == 200) {
       try {
-        List<dynamic> data = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes); // ✅ Türkçe karakter desteği
+        List<dynamic> data = json.decode(decodedBody);
         return data.map<Map<String, String>>((category) {
           return {
             'label': category['label'].toString(),
@@ -52,19 +52,21 @@ class ApiServices {
   Future<List<Place>> getPlaces({
     String? category,
     String? searchQuery,
-    String? price,         // ✅ Django'da "price"
-    double? minRating,     // ✅ Django'da "min_rating"
-    bool? hasWifi,         // ✅ Django'da "wifi"
+    String? price,
+    double? minRating,
+    bool? hasWifi,
   }) async {
     String url = '$baseUrl/places/';
     Map<String, String> queryParams = {};
 
+    // Filtreleme parametreleri
     if (category != null) queryParams['category'] = category;
     if (searchQuery != null) queryParams['search'] = searchQuery;
-    if (price != null) queryParams['price'] = price;
+    if (price != null) queryParams['price_range'] = price;
     if (minRating != null) queryParams['min_rating'] = minRating.toString();
     if (hasWifi != null) queryParams['wifi'] = hasWifi.toString();
 
+    // Eğer herhangi bir filtre varsa URL'ye ekliyoruz
     if (queryParams.isNotEmpty) {
       url += '?${Uri(queryParameters: queryParams).query}';
     }
@@ -81,10 +83,10 @@ class ApiServices {
     try {
       final response = await http.get(Uri.parse(url), headers: headers);
       print('Status: ${response.statusCode}');
-      print('Response Body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes); // türkçe karakter 
+        final decoded = json.decode(decodedBody);
         final data = decoded is List ? decoded : decoded['results'];
         return data.map<Place>((json) => Place.fromJson(json)).toList();
       } else {
@@ -101,4 +103,4 @@ class ApiServices {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
   }
-} 
+}

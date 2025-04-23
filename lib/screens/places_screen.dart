@@ -1,3 +1,4 @@
+// kafe ekranı
 import 'package:flutter/material.dart';
 import 'package:nom_nom_guide/models/place.dart';
 
@@ -11,23 +12,24 @@ class PlaceScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(place.name),
+        backgroundColor: Colors.teal, 
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
             // Kafe Adı
             Text(
               place.name,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const SizedBox(height: 8),
 
             // Lokasyon
             Row(
               children: [
-                const Icon(Icons.location_on, size: 20),
+                const Icon(Icons.location_on, size: 20, color: Colors.blue),
                 const SizedBox(width: 5),
                 Text(place.location),
               ],
@@ -39,7 +41,7 @@ class PlaceScreen extends StatelessWidget {
               children: [
                 const Icon(Icons.star, color: Colors.amber, size: 20),
                 const SizedBox(width: 5),
-                Text('${place.rating.toStringAsFixed(1)} (${place.totalReviews} yorum)'),
+                Text('${place.rating.toStringAsFixed(1)} (${place.totalReviews} reviews)'),
               ],
             ),
             const SizedBox(height: 20),
@@ -52,46 +54,66 @@ class PlaceScreen extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               place.description ?? 'Açıklama bulunamadı.',
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
 
             const SizedBox(height: 20),
 
             // Kategori
             const Text(
-              'Kategori',
+              'Category',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               _translateCategory(place.category),
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
 
             const SizedBox(height: 20),
 
-            // Fiyat Aralığı
+            // Fiyat aralığı
             const Text(
-              'Fiyat Aralığı',
+              'Price',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
               _translatePriceRange(place.priceRange),
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
 
             const SizedBox(height: 20),
 
-            // Wi-Fi Durumu
+            // Wi-Fi
             const Text(
               'Wi-Fi',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 6),
             Text(
-              place.hasWifi ? 'Var' : 'Yok',
-              style: const TextStyle(fontSize: 16),
+              place.hasWifi ? 'yes' : 'no',
+              style: const TextStyle(fontSize: 16, color: Colors.black54),
+            ),
+
+            const SizedBox(height: 30),
+
+            // Favori ekleme butonu
+            ElevatedButton(
+              onPressed: () {
+                // Favorilere ekleme 
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal, //  backgroundColor 
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Add favorites',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),
@@ -117,11 +139,11 @@ class PlaceScreen extends StatelessWidget {
   String _translatePriceRange(String priceRange) {
     switch (priceRange) {
       case 'cheap':
-        return 'Uygun';
+        return 'Cheap';
       case 'medium':
-        return 'Orta';
+        return 'Medium';
       case 'expensive':
-        return 'Pahalı';
+        return 'Expensive';
       default:
         return priceRange;
     }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:nom_nom_guide/services/api_services.dart';
 import 'package:nom_nom_guide/models/place.dart';
 import 'package:nom_nom_guide/screens/places_screen.dart';
@@ -17,6 +16,10 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
   String? selectedCategory;
   late Future<List<Place>> places;
   List<Map<String, String>> categories = [];
+
+  String? selectedPriceRange;
+  double minRating = 0.0;
+  bool wifiOnly = false;
 
   @override
   void initState() {
@@ -40,7 +43,10 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
   void fetchPlaces() {
     setState(() {
       places = ApiServices().getPlaces(
-        category: selectedCategory?.isEmpty ?? true ? null : selectedCategory,
+        category: selectedCategory,
+        price: selectedPriceRange,
+        minRating: minRating > 0.0 ? minRating : null,
+        hasWifi: wifiOnly ? true : null,
       );
     });
   }
@@ -55,43 +61,112 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mekanlar')),
+      appBar: AppBar(title: const Text('Places')),
       body: Column(
         children: [
-          // Kategoriler Yatay Liste
-          SizedBox(
-            height: 60,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: categories.length,
-              itemBuilder: (context, index) {
-                final category = categories[index];
-                final isSelected = selectedCategory == category['key'];
-
-                return GestureDetector(
-                  onTap: () => onCategorySelected(category['key']),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.black : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text(
-                        category['label']!,
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black,
-                        ),
+          // Kategori Fiyat ve WiFi  Yanyana
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
+            child: Row(
+              children: [
+                Flexible(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedCategory,
+                    hint: const Text("Category"),
+                    items: categories.map((category) {
+                      return DropdownMenuItem<String>(  
+                        value: category['key'],
+                        child: Text(category['label']!),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      onCategorySelected(value);
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
                       ),
                     ),
                   ),
-                );
-              },
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: DropdownButtonFormField<String>(
+                    value: selectedPriceRange,
+                    hint: const Text("Price"),
+                    items: [
+                      DropdownMenuItem(value: null, child: Text("All")),
+                      DropdownMenuItem(value: 'cheap', child: Text("Cheap")),
+                      DropdownMenuItem(value: 'medium', child: Text("Medium")),
+                      DropdownMenuItem(value: 'expensive', child: Text("Expensive")),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        selectedPriceRange = value;
+                      });
+                      fetchPlaces();
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // WiFi Switch
+                Flexible(
+                  child: SwitchListTile(
+                    title: const Text("has WiFi "),
+                    value: wifiOnly,
+                    onChanged: (value) {
+                      setState(() {
+                        wifiOnly = value;
+                      });
+                      fetchPlaces();
+                    },
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
             ),
           ),
 
-          // Mekanlar Listesi
+          // Minimum rating 
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
+            child: Row(
+              children: [
+                const Text("Rate:", style: TextStyle(fontSize: 14)),
+                Expanded(
+                  child: Slider(
+                    label: "${minRating.toStringAsFixed(1)}",
+                    min: 0.0,
+                    max: 5.0,
+                    divisions: 10,
+                    value: minRating,
+                    onChanged: (value) {
+                      setState(() {
+                        minRating = value;
+                      });
+                    },
+                    onChangeEnd: (_) => fetchPlaces(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Mekanlar listesi
           Expanded(
             child: FutureBuilder<List<Place>>(
               future: places,
@@ -109,10 +184,25 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   itemCount: placeList.length,
                   itemBuilder: (context, index) {
                     final place = placeList[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    return Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.pink.shade100,
+                        borderRadius: BorderRadius.circular(15),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade300,
+                            blurRadius: 4,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
                       child: ListTile(
-                        title: Text(place.name),
+                        leading: Icon(Icons.local_cafe, color: Colors.pink.shade700, size: 30),
+                        title: Text(
+                          place.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         subtitle: Text(place.location),
                         trailing: const Icon(Icons.arrow_forward_ios),
                         onTap: () {
@@ -134,4 +224,4 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
       ),
     );
   }
-}  
+}
