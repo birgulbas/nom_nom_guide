@@ -139,7 +139,7 @@ class PlaceScreen extends StatelessWidget {
   String _translatePriceRange(String priceRange) {
     switch (priceRange) {
       case 'cheap':
-        return 'Cheap';
+        return 'cheap';
       case 'medium':
         return 'Medium';
       case 'expensive':
