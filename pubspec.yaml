@@ -32,6 +32,8 @@ dependencies:
     sdk: flutter
   url_launcher: ^6.2.5
   http: ^0.13.6
+  flutter_secure_storage: ^8.0.0 # Token'ı güvenli saklamak için
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8

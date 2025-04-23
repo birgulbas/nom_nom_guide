@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 import 'profile_screen.dart';
@@ -99,14 +100,20 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () {
-                          if (_formKey1.currentState!.validate()) {
+                        onPressed: () async {
+                          final success = await AuthService().login(emailController.text, passwordController.text);
+                          if (success) {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => ProfileScreen()),
                             );
+                          } else {// hata mesajı
+                             ScaffoldMessenger.of(context).showSnackBar(
+                             SnackBar(content: Text("Login failed!")),
+                             );
                           }
+
                         },
                         child: Text(
                           'Log in',
