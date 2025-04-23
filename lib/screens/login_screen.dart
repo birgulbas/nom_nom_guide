@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
+import 'profile_screen.dart';
 
-class LoginScreenContent extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+class _LoginScreenState extends State<LoginScreen> {
+
   final _formKey1 = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-
-  LoginScreenContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +104,7 @@ class LoginScreenContent extends StatelessWidget {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => HomeScreen()),
+                                  builder: (context) => ProfileScreen()),
                             );
                           }
                         },

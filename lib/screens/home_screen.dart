@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http; // 🟣 http paketi eklendi
-import 'dart:convert'; // 🟣 JSON ayrıştırmak için
-
 import 'login_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
@@ -12,8 +9,6 @@ import 'userFavorites_screen.dart';
 import 'randomAdventure_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -21,13 +16,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
+  // Navigasyon için sayfalar
   final List<Widget> _pages = [
-    HomeScreenContent(),
-    FavoritesScreen(),
-    ProfileScreen(),
-    SettingsScreen(),
+    HomeScreenContent(), // Ana sayfa içeriği
+    FavoritesScreen(), // Favoriler sayfası
+    ProfileScreen(), // Kullanıcı profili sayfası
+    SettingsScreen(), // Ayarlar sayfası
   ];
 
+  // Butonlara tıklandığında sayfa değiştirme fonksiyonu
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -44,19 +41,23 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreenContent()),
+                MaterialPageRoute(builder: (context) => LoginScreen()),
               );
             },
           )
         ],
       ),
-      body: _pages[_selectedIndex],
+
+
+      body: _pages[_selectedIndex], // Seçili sayfayı göstermek için
+
+      // Alt Navigasyon Çubuğu
       bottomNavigationBar: BottomNavigationBar(
-        showSelectedLabels: false,
+        showSelectedLabels: false, //etiketleri gizlemek için
         showUnselectedLabels: false,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.pink.shade600,
+        selectedItemColor: Colors.pink.shade600, //olduğun sayfanın rengini koyulaştırır
         unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'HomePage'),
@@ -69,55 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// 🟣 StatefulWidget olarak HomeScreenContent yeniden yazıldı
-class HomeScreenContent extends StatefulWidget {
-  const HomeScreenContent({super.key});
-
-  @override
-  State<HomeScreenContent> createState() => _HomeScreenContentState();
-}
-
-class _HomeScreenContentState extends State<HomeScreenContent> {
-  String message = "Django'dan veri bekleniyor..."; // 🟣 Gelen veri burada tutulur
-
-  @override
-  void initState() {
-    super.initState();
-    fetchData(); // 🟣 Sayfa açıldığında veri çekilir
-  }
-
-  // 🟣 Django'dan veri çeken fonksiyon
-  void fetchData() async {
-    try {
-      final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/hello/'));
-
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          message = data['message']; // 🟣 JSON içindeki mesaj alınır
-        });
-      } else {
-        setState(() {
-          message = "Hata kodu: ${response.statusCode}";
-        });
-      }
-    } catch (e) {
-      setState(() {
-        message = "Bağlantı hatası: $e";
-      });
-    }
-  }
-
+// Ana Sayfa İçeriği
+class HomeScreenContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
+        // LOGO RESMİ & ARKAPLAN
         Container(
-          width: double.infinity,
-          height: 200,
+          width: double.infinity, // Tam ekran genişliği
+          height: 200, // Yüksekliği artırdık
           decoration: BoxDecoration(
-            color: Colors.deepOrange.shade100,
+            color: Colors.deepOrange.shade100, // Arka plan rengi
           ),
           child: Center(
             child: Image.asset(
@@ -128,6 +92,7 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
           ),
         ),
 
+        // ARAMA ÇUBUĞU
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: TextField(
@@ -139,24 +104,13 @@ class _HomeScreenContentState extends State<HomeScreenContent> {
           ),
         ),
 
-Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: Text(
-    message,
-    style: TextStyle(
-      fontSize: 26,
-      fontWeight: FontWeight.bold,
-      color: Colors.red, // 🔴 Renk ekledik, hemen görünsün
-    ),
-    textAlign: TextAlign.center,
-  ),
-),
+        // KATEGORİLER (TIKLAYINCA YENİ SAYFA AÇILIR)
         Expanded(
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             children: <Widget>[
               _buildCustomListTile(
-                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()),
+                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()), //yakındaki mekanların sayfasını eklemek için
               _buildCustomListTile(
                   context, "Concept Places", Icons.category, Colors.blue.shade300, ConceptScreen()),
               _buildCustomListTile(
@@ -170,8 +124,9 @@ Padding(
     );
   }
 
+  // Özel ListTile Widget'ı (Tıklanınca yeni sayfa açar)
   Widget _buildCustomListTile(BuildContext context, String title, IconData icon, Color bgColor, Widget targetScreen) {
-    return Container(
+    return Container( //yakındaki mekanların divleri
       margin: EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: bgColor,
@@ -197,4 +152,3 @@ Padding(
     );
   }
 }
-
