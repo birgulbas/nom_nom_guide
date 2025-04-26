@@ -145,21 +145,15 @@ class _PlaceScreenState extends State<PlaceScreen> {
         child: ListView(
           children: [
             Text(
-              widget.place.name,
+               widget.place.name,
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
             ),
             const SizedBox(height: 8),
-            Row(
-              children: [
-                const Icon(Icons.location_on, size: 20, color: Colors.blue),
-                const SizedBox(width: 5),
-                Text(widget.place.location),
-              ],
-            ),
+           //
             const SizedBox(height: 12),
             if (widget.place.latitude != null && widget.place.longitude != null) ...[
               GestureDetector(
-                onDoubleTap: _openInGoogleMaps, // Çift tıklama ile haritayı aç
+                onDoubleTap: _openInGoogleMaps, // çift tıklamayla haritayı açar
                 child: Container(
                   height: 200,
                   decoration: BoxDecoration(
@@ -200,13 +194,20 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
               const SizedBox(height: 20),
             ],
+
             Row(
-              children: [
-                const Icon(Icons.star, color: Colors.amber, size: 20),
-                const SizedBox(width: 5),
-                Text('${widget.place.rating.toStringAsFixed(1)} (${widget.place.totalReviews} reviews)'),
-              ],
-            ),
+  children: [
+    const Icon(Icons.location_on, size: 20, color: Colors.blue),
+    const SizedBox(width: 5),
+    Expanded( // adresin sığmaması durumunda taşmasını engeller ve alt satıra geçmesini sağlar
+      child: Text(
+        widget.place.location,
+        overflow: TextOverflow.ellipsis, // metin taşarsa üç nokta  ekler
+        softWrap: true, // Mmtnin taşarak bir alt satıra geçmesini sağlar
+      ),
+    ),
+  ],
+),
             const SizedBox(height: 20),
             const Text(
               'Category',

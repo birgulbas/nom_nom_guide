@@ -1,3 +1,4 @@
+// yakın mesafe kafe mapi
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -75,11 +76,11 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Yakındaki Kafeler")),
+      appBar: AppBar(title: const Text("Near by places and all")),
       body: userLocation == null
           ? const Center(child: CircularProgressIndicator())
           : FlutterMap(
-              mapController: _mapController,  // Harita kontrolcüsünü ekledik
+              mapController: _mapController,  // harita kontrolcüsü
               options: MapOptions(
                 center: userLocation,
                 zoom: zoomLevel,
@@ -88,8 +89,8 @@ class _MapScreenState extends State<MapScreen> {
                     zoomLevel = position.zoom ?? zoomLevel;
                   });
                 },
-                minZoom: 10.0,  // Minimum zoom seviyesini ayarladık
-                maxZoom: 18.0,  // Maksimum zoom seviyesini ayarladık
+                minZoom: 10.0,  // Min zoom 
+                maxZoom: 18.0,  // Max zoom 
               ),
               children: [
                 TileLayer(
@@ -131,18 +132,18 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // Konuma yakınlaşma butonu
+          // konuma yakınlaşma butonu
           FloatingActionButton(
             onPressed: _zoomToUserLocation,
             backgroundColor: Colors.blue,
             child: const Icon(Icons.my_location),
           ),
           const SizedBox(height: 16),
-          // Zoom in ve zoom out butonları
+          // Zoom in ve zoom out butonlar
           FloatingActionButton(
             onPressed: () {
               setState(() {
-                zoomLevel += 1.0;  // Zoom level artır
+                zoomLevel += 1.0;  // zoom level art
               });
             },
             backgroundColor: Colors.green,
@@ -152,7 +153,7 @@ class _MapScreenState extends State<MapScreen> {
           FloatingActionButton(
             onPressed: () {
               setState(() {
-                zoomLevel -= 1.0;  // Zoom level azalt
+                zoomLevel -= 1.0;  // zoom level az
               });
             },
             backgroundColor: Colors.red,
