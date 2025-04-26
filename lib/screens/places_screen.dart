@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:nom_nom_guide/models/place.dart';
 import 'package:nom_nom_guide/models/review.dart';
+import 'package:nom_nom_guide/manager/favorites.dart';
 import 'package:nom_nom_guide/services/api_services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';  // url_launcher paketini ekleyin
 
 class PlaceScreen extends StatefulWidget {
   final Place place;
@@ -29,31 +32,36 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
   void _checkIfFavorite() {
     setState(() {
-      isFavorite = false;
+      isFavorite = Provider.of<FavoritesManager>(context, listen: false).isFavorite(widget.place);
     });
   }
 
   void _toggleFavorite() {
+    final favoritesManager = Provider.of<FavoritesManager>(context, listen: false);
+
     setState(() {
+      if (isFavorite) {
+        favoritesManager.removeFavorite(widget.place);
+      } else {
+        favoritesManager.addFavorite(widget.place);
+      }
       isFavorite = !isFavorite;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          isFavorite ? 'Added to favorites' : 'Removed from favorites.',
+          isFavorite ? 'Added to favorites.' : 'Removed from favorites.',
         ),
       ),
     );
-
   }
 
   Future<void> _fetchReviews() async {
     try {
-      // ApiServices üzerinden yorumları çekiyoruz
       final reviews = await ApiServices().getReviews(widget.place.id);
       setState(() {
-        _reviews = reviews; // Gelen yorumları güncelliyoruz
+        _reviews = reviews;
       });
     } catch (e) {
       print('Yorumlar alınırken hata: $e');
@@ -74,7 +82,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
         _commentController.text,
         _rating,
       );
-      _fetchReviews(); // Yorum eklendikten sonra yorumları yeniden alıyoruz
+      _fetchReviews();
       _commentController.clear();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Your comment has been sent successfully.")),
@@ -115,12 +123,22 @@ class _PlaceScreenState extends State<PlaceScreen> {
     }
   }
 
+  // Google Maps'te konumu açan fonksiyon
+  Future<void> _openInGoogleMaps() async {
+    final googleMapsUrl = 'https://www.google.com/maps?q=${widget.place.latitude},${widget.place.longitude}';
+    if (await canLaunch(googleMapsUrl)) {
+      await launch(googleMapsUrl);
+    } else {
+      throw 'Could not launch Google Maps';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.place.name),
-        backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+        backgroundColor: Colors.pink.shade600,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -140,40 +158,43 @@ class _PlaceScreenState extends State<PlaceScreen> {
             ),
             const SizedBox(height: 12),
             if (widget.place.latitude != null && widget.place.longitude != null) ...[
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: FlutterMap(
-                    options: MapOptions(
-                      center: LatLng(widget.place.latitude!, widget.place.longitude!),
-                      zoom: 16.0,
-                      interactiveFlags: InteractiveFlag.none,
-                    ),
-                    children: [
-                      TileLayer(
-                        urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        userAgentPackageName: 'com.example.nom_nom_guide',
+              GestureDetector(
+                onDoubleTap: _openInGoogleMaps, // Çift tıklama ile haritayı aç
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: FlutterMap(
+                      options: MapOptions(
+                        center: LatLng(widget.place.latitude!, widget.place.longitude!),
+                        zoom: 16.0,
+                        interactiveFlags: InteractiveFlag.none,
                       ),
-                      MarkerLayer(
-                        markers: [
-                          Marker(
-                            point: LatLng(widget.place.latitude!, widget.place.longitude!),
-                            width: 40,
-                            height: 40,
-                            child: const Icon(
-                              Icons.location_on,
-                              color: Colors.red,
-                              size: 40,
+                      children: [
+                        TileLayer(
+                          urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                          userAgentPackageName: 'com.example.nom_nom_guide',
+                        ),
+                        MarkerLayer(
+                          markers: [
+                            Marker(
+                              point: LatLng(widget.place.latitude!, widget.place.longitude!),
+                              width: 40,
+                              height: 40,
+                              child: const Icon(
+                                Icons.location_on,
+                                color: Colors.red,
+                                size: 40,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -187,8 +208,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ],
             ),
             const SizedBox(height: 20),
-          
-            //kategori
             const Text(
               'Category',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -199,8 +218,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
               style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
             const SizedBox(height: 20),
-
-            //price
             const Text(
               'Price',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -211,8 +228,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
               style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
             const SizedBox(height: 20),
-
-            //wifi
             const Text(
               'Wi-Fi',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -223,7 +238,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
               style: const TextStyle(fontSize: 16, color: Colors.black54),
             ),
             const SizedBox(height: 30),
-
             IconButton(
               icon: Icon(
                 isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -232,8 +246,6 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
               onPressed: _toggleFavorite,
             ),
-
-            //yorumlar
             const Text(
               'Reviews',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),

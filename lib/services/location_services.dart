@@ -1,9 +1,7 @@
-import 'dart:html' as html;
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
 
-import 'package:geolocator/geolocator.dart';
 
 // Konum servisi
 class LocationService {

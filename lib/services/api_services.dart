@@ -8,17 +8,11 @@ import 'package:nom_nom_guide/models/review.dart';
 
 class ApiServices {
   // Base url apinin
- static String get baseUrl {
-    if (kIsWeb) {
-      return 'http://localhost:8000/api';
-    } else if (Platform.isAndroid) {
-      return 'http://10.0.2.2:8000/api'; // Android
-    } else {
-      return 'http://localhost:8000/api'; // IOS ve diğer platformlar
-  
 
-    }
-  }
+ static String get baseUrl {
+  return 'https://bitirmeprojesi-1xwg.onrender.com/api';
+}
+
 
   // Kategorileri apiden çekme fonksiyonu
   Future<List<Map<String, String>>> getCategories() async {

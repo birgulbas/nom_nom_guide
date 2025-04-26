@@ -9,6 +9,8 @@ import 'userFavorites_screen.dart';
 import 'randomAdventure_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -72,6 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 // Ana Sayfa İçeriği
 class HomeScreenContent extends StatelessWidget {
+  const HomeScreenContent({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -104,7 +108,7 @@ class HomeScreenContent extends StatelessWidget {
           ),
         ),
 
-        // KATEGORİLER (TIKLAYINCA YENİ SAYFA AÇILIR)
+        // KATEGORİLER 
         Expanded(
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -116,7 +120,7 @@ class HomeScreenContent extends StatelessWidget {
               _buildCustomListTile(
                   context, "User Favorites", Icons.star, Colors.green.shade300, FavoritesPlacesScreen()),
               _buildCustomListTile(
-                  context, "Random Adventure", Icons.casino, Colors.orange.shade300, RandomScreen()),
+                  context, "Random Adventure", Icons.casino, Colors.orange.shade300, RandomAdventureScreen()),
             ],
           ),
         ),
@@ -124,7 +128,7 @@ class HomeScreenContent extends StatelessWidget {
     );
   }
 
-  // Özel ListTile Widget'ı (Tıklanınca yeni sayfa açar)
+  // Tıklanınca yeni sayfa açar
   Widget _buildCustomListTile(BuildContext context, String title, IconData icon, Color bgColor, Widget targetScreen) {
     return Container( //yakındaki mekanların divleri
       margin: EdgeInsets.only(bottom: 10),
@@ -151,5 +155,4 @@ class HomeScreenContent extends StatelessWidget {
       ),
     );
   }
-}
-
+}   

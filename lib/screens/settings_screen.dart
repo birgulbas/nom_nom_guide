@@ -21,14 +21,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _openFeedbackDialog() {
-    TextEditingController _controller = TextEditingController();
+    TextEditingController controller = TextEditingController();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text("FeedBack"),
         content: TextField(
-          controller: _controller,
+          controller: controller,
           maxLines: 4,
           decoration: InputDecoration(hintText: "Write your problem or feedback."),
         ),

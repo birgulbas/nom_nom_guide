@@ -72,7 +72,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
               child: Row(
                 children: [
                   // Category Dropdown
-                  Container(
+                  SizedBox(
                     width: 160, // Sabit genişlik ekleyin
                     child: DropdownButtonFormField<String>(
                       isExpanded: true,  // genişlik esnek 
@@ -104,7 +104,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   const SizedBox(width: 8),
 
                   // Price Dropdown
-                  Container(
+                  SizedBox(
                     width: 160, // sabit genişlik 
                     child: DropdownButtonFormField<String>(
                       isExpanded: true, // genişliği esnek yapın
@@ -136,7 +136,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   const SizedBox(width: 8),
 
                   // WiFi Switch
-                  Container(
+                  SizedBox(
                     width: 160, // Sabit genişlik ekleyin
                     child: SwitchListTile(
                       title: const Text("has WiFi "),
@@ -164,7 +164,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                 const Text("Rate:", style: TextStyle(fontSize: 14)),
                 Expanded(
                   child: Slider(
-                    label: "${minRating.toStringAsFixed(1)}",
+                    label: minRating.toStringAsFixed(1),
                     min: 0.0,
                     max: 5.0,
                     divisions: 10,
