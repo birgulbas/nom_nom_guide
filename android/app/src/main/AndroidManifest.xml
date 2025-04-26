@@ -3,11 +3,15 @@
 
     <!-- INTERNET izni manifest tagının ALTINA -->
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  <!-- navigasyon izinleri -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- navigasyon izinleri -->
+   
     <application
+        android:usesCleartextTraffic="true"
         android:label="nom_nom_guide"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        
 
         <activity
             android:name=".MainActivity"

@@ -64,84 +64,99 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
       appBar: AppBar(title: const Text('Places')),
       body: Column(
         children: [
-          // Kategori Fiyat ve WiFi  Yanyana
+          // Kategori, fiyat ve WiFi 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
-            child: Row(
-              children: [
-                Flexible(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedCategory,
-                    hint: const Text("Category"),
-                    items: categories.map((category) {
-                      return DropdownMenuItem<String>(  
-                        value: category['key'],
-                        child: Text(category['label']!),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      onCategorySelected(value);
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal, // yatay kaydırma 
+              child: Row(
+                children: [
+                  // Category Dropdown
+                  Container(
+                    width: 160, // Sabit genişlik ekleyin
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true,  // genişlik esnek 
+                      value: selectedCategory,
+                      hint: const Text("Category"),
+                      items: categories.map((category) {
+                        return DropdownMenuItem<String>(  
+                          value: category['key'],
+                          child: Text(
+                            category['label']!,
+                            overflow: TextOverflow.ellipsis, // taşmayı engellemek için
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        onCategorySelected(value);
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: DropdownButtonFormField<String>(
-                    value: selectedPriceRange,
-                    hint: const Text("Price"),
-                    items: [
-                      DropdownMenuItem(value: null, child: Text("All")),
-                      DropdownMenuItem(value: 'cheap', child: Text("Cheap")),
-                      DropdownMenuItem(value: 'medium', child: Text("Medium")),
-                      DropdownMenuItem(value: 'expensive', child: Text("Expensive")),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        selectedPriceRange = value;
-                      });
-                      fetchPlaces();
-                    },
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
+                  const SizedBox(width: 8),
+
+                  // Price Dropdown
+                  Container(
+                    width: 160, // sabit genişlik 
+                    child: DropdownButtonFormField<String>(
+                      isExpanded: true, // genişliği esnek yapın
+                      value: selectedPriceRange,
+                      hint: const Text("Price"),
+                      items: [
+                        DropdownMenuItem(value: null, child: Text("All")),
+                        DropdownMenuItem(value: 'cheap', child: Text("Cheap")),
+                        DropdownMenuItem(value: 'medium', child: Text("Medium")),
+                        DropdownMenuItem(value: 'expensive', child: Text("Expensive")),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedPriceRange = value;
+                        });
+                        fetchPlaces();
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                // WiFi Switch
-                Flexible(
-                  child: SwitchListTile(
-                    title: const Text("has WiFi "),
-                    value: wifiOnly,
-                    onChanged: (value) {
-                      setState(() {
-                        wifiOnly = value;
-                      });
-                      fetchPlaces();
-                    },
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
+                  const SizedBox(width: 8),
+
+                  // WiFi Switch
+                  Container(
+                    width: 160, // Sabit genişlik ekleyin
+                    child: SwitchListTile(
+                      title: const Text("has WiFi "),
+                      value: wifiOnly,
+                      onChanged: (value) {
+                        setState(() {
+                          wifiOnly = value;
+                        });
+                        fetchPlaces();
+                      },
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
-          // Minimum rating 
+          // Minimum Rating Slider
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
             child: Row(

@@ -1,4 +1,5 @@
 class Place {
+  final int id;
   final String name;
   final String location;
   final String category;
@@ -7,13 +8,18 @@ class Place {
   final String? description;
   final String priceRange;
   final bool hasWifi;
+  final double? latitude; // artık nullable
+  final double? longitude;
 
   Place({
+    required this.id,
     required this.name,
     required this.location,
     required this.category,
     required this.rating,
     required this.totalReviews,
+    this.latitude,
+    this.longitude,
     this.description,
     required this.priceRange,
     required this.hasWifi,
@@ -21,14 +27,17 @@ class Place {
 
   factory Place.fromJson(Map<String, dynamic> json) {
     return Place(
-      name: json['name'],
-      location: json['location'],
-      category: json['category'],
-      rating: json['rating'].toDouble(),
-      totalReviews: json['total_reviews'],
-      description: json['description'], // varsa
-      priceRange: json['price_range'],
-      hasWifi: json['has_wifi'],
+      id: json['id'],
+      name: json['name'] ?? '',
+      location: json['location'] ?? '',
+      category: json['category'] ?? '',
+      rating: (json['rating'] ?? 0).toDouble(),
+      totalReviews: json['total_reviews'] ?? 0,
+      description: json['description'],
+      priceRange: json['price_range'] ?? '',
+      hasWifi: json['has_wifi'] ?? false,
+      latitude: json['latitude']?.toDouble(),
+      longitude: json['longitude']?.toDouble(),
     );
   }
 }
