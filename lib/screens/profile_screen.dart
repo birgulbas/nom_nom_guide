@@ -9,6 +9,8 @@ import 'package:nom_nom_guide/screens/login_screen.dart';
 import 'package:nom_nom_guide/screens/changePassword_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nom_nom_guide/services/api_services.dart';
+import 'package:flutter/material.dart';
+
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -61,7 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
 
     if (username == null) {
-      await fetchUserInfo();  // Eğer localde username yoksa API'den çek
+      await fetchUserInfo();
     }
   }
 
@@ -77,41 +79,53 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Profile"),
+        title: const Text("My Profiles"),
         backgroundColor: Colors.pink,
-      ),
+        titleTextStyle: TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+        ),
+    ),
+
       body: isLoggedIn
           ? LoggedInView(
         avatarPath: avatarPath,
         username: username ?? '',
         onAvatarChanged: _saveAvatar,
       )
-          : Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.person_outline, size: 80, color: Colors.grey),
-              const SizedBox(height: 20),
-              const Text("Do you have an account?", style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                  );
-                },
-                child: const Text("Sign In / Sign Up"),
+          : _buildLoggedOutView(context),
+    );
+  }
+
+  Widget _buildLoggedOutView(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.person_outline, size: 80, color: Colors.grey),
+            const SizedBox(height: 20),
+            const Text("Do you have an account?", style: TextStyle(fontSize: 20)),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.pink.shade100,
               ),
-            ],
-          ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+              },
+              child: const Text("Sign In / Sign Up"),
+            ),
+          ],
         ),
       ),
     );
@@ -135,88 +149,73 @@ class LoggedInView extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        GestureDetector(
-          onTap: () async {
-            final selectedAvatarPath = await Navigator.push<String>(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AvatarSelectionScreen(),
-              ),
-            );
-            if (selectedAvatarPath != null) {
-              onAvatarChanged(selectedAvatarPath);
-            }
-          },
-          child: CircleAvatar(
-            radius: 40,
-            backgroundColor: Colors.grey.shade300,
-            child: ClipOval(
-              child: Image.asset(
-                avatarPath ?? 'assets/images/avatar1.png',
-                fit: BoxFit.cover,
-                width: 80,
-                height: 80,
+        Center(
+          child: GestureDetector(
+            onTap: () async {
+              final selectedAvatarPath = await Navigator.push<String>(
+                context,
+                MaterialPageRoute(builder: (context) => AvatarSelectionScreen()),
+              );
+              if (selectedAvatarPath != null) {
+                onAvatarChanged(selectedAvatarPath);
+              }
+            },
+            child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.orangeAccent,
+              child: CircleAvatar(
+                radius: 46,
+                backgroundImage: AssetImage(avatarPath ?? 'assets/images/avatar1.png'),
               ),
             ),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 12),
         Center(
           child: Text(
             username.isNotEmpty ? username : "Guest User",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
           ),
         ),
-        const Divider(height: 40),
-        ListTile(
-          leading: const Icon(Icons.lock_outline),
-          title: const Text("Change Password"),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ChangePasswordScreen()),
-            );
-          },
+        const SizedBox(height: 20),
+        _buildTile(
+          context,
+          icon: Icons.lock_outline,
+          text: "Change Password",
+          color: Colors.teal.shade300,
+          destination: const ChangePasswordScreen(),
         ),
-        ListTile(
-          leading: const Icon(Icons.info_outline),
-          title: const Text("My User Information"),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const UserInfoScreen()),
-            );
-          },
+        _buildTile(
+          context,
+          icon: Icons.info_outline,
+          text: "My User Information",
+          color: Colors.lightGreen,
+          destination: const UserInfoScreen(),
         ),
-        ListTile(
-          leading: const Icon(Icons.comment),
-          title: const Text("My Comments"),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyCommentsScreen(username: username)),
-            );
-          },
+        _buildTile(
+          context,
+          icon: Icons.comment,
+          text: "My Comments",
+          color: Colors.deepOrangeAccent,
+          destination: MyCommentsScreen(username: username),
         ),
-        ListTile(
-          leading: const Icon(Icons.star_border),
-          title: const Text("My Ratings"),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MyRatingsScreen(username: username)),
-            );
-          },
+        _buildTile(
+          context,
+          icon: Icons.star_border,
+          text: "My Ratings",
+          color: Colors.orangeAccent,
+          destination: MyRatingsScreen(username: username),
         ),
-        ListTile(
-          leading: const Icon(Icons.logout),
-          title: const Text("Log Out"),
+        _buildTile(
+          context,
+          icon: Icons.logout,
+          text: "Log Out",
+          color: Colors.redAccent,
           onTap: () async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             await prefs.setBool('isLoggedIn', false);
             await prefs.remove('username');
             await prefs.remove('avatarPath');
-
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -226,7 +225,27 @@ class LoggedInView extends StatelessWidget {
         ),
       ],
     );
+  }
 
-
+  Widget _buildTile(BuildContext context,
+      {required IconData icon,
+        required String text,
+        Color? color,
+        Widget? destination,
+        VoidCallback? onTap}) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: ListTile(
+        leading: Icon(icon, color: color ?? Colors.pink),
+        title: Text(text),
+        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+        onTap: onTap ??
+                () {
+              if (destination != null) {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => destination));
+              }
+            },
+      ),
+    );
   }
 }

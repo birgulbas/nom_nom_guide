@@ -13,7 +13,11 @@ class FavoritesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-          title: const Text("FAVORITES"), backgroundColor: Colors.deepOrangeAccent,),
+          title: const Text("Favorites"), backgroundColor: Colors.deepOrangeAccent, titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),),
       body: favorites.isEmpty
           ? const Center(
               child: Text("Favoriler burada listelenecek."),

@@ -40,7 +40,11 @@ class _MyRatingsScreenState extends State<MyRatingsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Ratings'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.orangeAccent, titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
       ),
       body: userRatings.isEmpty
           ? Center(child: Text('You have not rated any places yet.'))

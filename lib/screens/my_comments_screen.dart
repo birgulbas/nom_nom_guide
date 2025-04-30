@@ -40,7 +40,10 @@ class _MyCommentsScreenState extends State<MyCommentsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Comments'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.deepOrangeAccent,titleTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 20,
+      ),
       ),
       body: userComments.isEmpty
           ? Center(child: Text('You have not made any comments yet.'))

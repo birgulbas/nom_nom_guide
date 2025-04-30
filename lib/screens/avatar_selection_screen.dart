@@ -16,7 +16,7 @@ class AvatarSelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Select Avatar')),
+      appBar: AppBar(title: Text('Select Avatar'), backgroundColor:Colors.lightBlueAccent,),
       body: GridView.builder(
         padding: EdgeInsets.all(16),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

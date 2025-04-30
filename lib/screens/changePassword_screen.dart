@@ -46,7 +46,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Change Password'),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.teal.shade300,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

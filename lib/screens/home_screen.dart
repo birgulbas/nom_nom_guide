@@ -35,10 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-
-      ),
-
 
       body: _pages[_selectedIndex], // Seçili sayfayı göstermek için
 

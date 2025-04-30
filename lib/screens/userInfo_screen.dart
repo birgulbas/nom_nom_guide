@@ -85,7 +85,7 @@ class _UserInfoScreenState extends State<UserInfoScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("My User Information"),
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.lightGreen,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
