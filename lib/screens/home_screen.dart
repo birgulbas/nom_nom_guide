@@ -71,7 +71,7 @@ class HomeScreenContent extends StatelessWidget {
       children: <Widget>[
         // LOGO RESMİ & ARKAPLAN
         Container(
-          width: double.infinity, // Tam ekran genişliği
+          width: double.infinity, 
           height: 200, 
           decoration: BoxDecoration(
             color: Colors.deepOrange.shade100, // Arka plan rengi
