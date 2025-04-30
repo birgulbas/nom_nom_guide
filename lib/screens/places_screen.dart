@@ -199,11 +199,11 @@ class _PlaceScreenState extends State<PlaceScreen> {
   children: [
     const Icon(Icons.location_on, size: 20, color: Colors.blue),
     const SizedBox(width: 5),
-    Expanded( // adresin sığmaması durumunda taşmasını engeller ve alt satıra geçmesini sağlar
+    Expanded( // adresin sığmaması durumunda taşmasını engeller
       child: Text(
         widget.place.location,
         overflow: TextOverflow.ellipsis, // metin taşarsa üç nokta  ekler
-        softWrap: true, // Mmtnin taşarak bir alt satıra geçmesini sağlar
+        softWrap: true, // Metin fazlaysa  alt satıra geçer
       ),
     ),
   ],

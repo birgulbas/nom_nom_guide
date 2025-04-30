@@ -7,9 +7,12 @@ class NearbyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Nearby Places"),
-      ),
+      backgroundColor: const Color.fromARGB(255, 255, 255, 255), 
+        appBar: AppBar(
+  title: const Text('Near by Places'),
+  backgroundColor: Colors.pink.shade600,  
+),
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

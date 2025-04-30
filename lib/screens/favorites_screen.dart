@@ -1,3 +1,4 @@
+//kullanıcıya göre çekiyor favorileri
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:nom_nom_guide/manager/favorites.dart';

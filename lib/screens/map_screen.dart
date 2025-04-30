@@ -19,13 +19,13 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? userLocation;
   List<Place> nearbyPlaces = [];
   double zoomLevel = 15.0;
-  late MapController _mapController;  // Harita kontrolü için
+  late MapController _mapController;  
 
   @override
   void initState() {
     super.initState();
     locationService = LocationService();
-    _mapController = MapController();  // Harita kontrolcüsünü başlat
+    _mapController = MapController();  
     loadMapData();
   }
 
@@ -50,8 +50,8 @@ class _MapScreenState extends State<MapScreen> {
       });
 
       setState(() {
-        userLocation = userLatLng;
-        nearbyPlaces = sortedPlaces;  // Bütün kafeleri al
+        userLocation = userLatLng; // kullanıcı konumu
+        nearbyPlaces = sortedPlaces;  // kafeleri al
       });
     } catch (e) {
       print("Hata: $e");
@@ -76,11 +76,14 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Near by places and all")),
+       appBar: AppBar(
+  title: const Text('Near by Places and All'),
+  backgroundColor: Colors.pink.shade600, 
+),
       body: userLocation == null
           ? const Center(child: CircularProgressIndicator())
           : FlutterMap(
-              mapController: _mapController,  // harita kontrolcüsü
+              mapController: _mapController,  
               options: MapOptions(
                 center: userLocation,
                 zoom: zoomLevel,

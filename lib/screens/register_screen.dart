@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart'; // AuthService import ediliyor
+// AuthService import ediliyor
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});

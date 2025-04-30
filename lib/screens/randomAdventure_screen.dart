@@ -2,10 +2,10 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:nom_nom_guide/models/place.dart';
 import 'package:nom_nom_guide/services/api_services.dart';
-import 'package:nom_nom_guide/screens/places_screen.dart'; // <-- Dikkat!
+import 'package:nom_nom_guide/screens/places_screen.dart'; 
 
 class RandomAdventureScreen extends StatefulWidget {
-  const RandomAdventureScreen({Key? key}) : super(key: key);
+  const RandomAdventureScreen({super.key});
 
   @override
   State<RandomAdventureScreen> createState() => _RandomAdventureScreenState();
@@ -73,13 +73,15 @@ class _RandomAdventureScreenState extends State<RandomAdventureScreen> with Sing
     super.dispose();
   }
 
-  @override
+  @override   
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // <-- Ekran arka planı beyaz oldu!
-      appBar: AppBar(
-        title: const Text('Random Adventure 🧭'),
-      ),
+      backgroundColor: const Color.fromRGBO(255, 255, 255, 0.995), // arkaplan 
+     appBar: AppBar(
+  title: const Text('Near by Places'),
+  backgroundColor: Colors.pink.shade600, 
+),
+
       body: Center(
         child: places.isEmpty
             ? const CircularProgressIndicator()

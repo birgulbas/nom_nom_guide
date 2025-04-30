@@ -5,8 +5,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AuthService {
   final storage = const FlutterSecureStorage();
-  final String baseUrl = "http://<DJANGO_BACKEND_IP>:8000"; // doğru IP'yi yaz
-
+static String get baseUrl {
+  return 'https://bitirmeprojesi-1xwg.onrender.com/api';
+}
   Future<bool> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/auth/token/login/'),

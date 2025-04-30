@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
 import 'favorites_screen.dart';
 import 'profile_screen.dart';
 import 'settings_screen.dart';
@@ -18,7 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  // Navigasyon için sayfalar
+  // sayfalar
   final List<Widget> _pages = [
     HomeScreenContent(), // Ana sayfa içeriği
     FavoritesScreen(), // Favoriler sayfası
@@ -73,7 +72,7 @@ class HomeScreenContent extends StatelessWidget {
         // LOGO RESMİ & ARKAPLAN
         Container(
           width: double.infinity, // Tam ekran genişliği
-          height: 200, // Yüksekliği artırdık
+          height: 200, 
           decoration: BoxDecoration(
             color: Colors.deepOrange.shade100, // Arka plan rengi
           ),

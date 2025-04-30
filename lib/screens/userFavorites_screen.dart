@@ -6,7 +6,10 @@ class FavoritesPlacesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("User Favorites")),
+        appBar: AppBar(
+  title: const Text('Favorites'),
+  backgroundColor: Colors.pink.shade600, 
+),
       body: Center(
         child: Text("Favori mekanlar burada görüntülenecek."),
       ),
