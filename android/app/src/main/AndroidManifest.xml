@@ -1,7 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.nom_nom_guide">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- INTERNET izni manifest tagının ALTINA -->
+
+<!-- INTERNET izni manifest tagının ALTINA -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />  <!-- navigasyon izinleri -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- navigasyon izinleri -->

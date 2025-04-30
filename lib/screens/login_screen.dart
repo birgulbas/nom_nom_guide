@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'home_screen.dart';
 import 'register_screen.dart';
 import 'profile_screen.dart';
-import 'package:nom_nom_guide/services/auth_service.dart';
+import 'package:nom_nom_guide/services/api_services.dart';// ApiServices import ediliyor
+import 'package:shared_preferences/shared_preferences.dart'; //giriş yapıldığını güncellemesi için
 
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
 
   final _formKey1 = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   @override
@@ -55,20 +57,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Username
                       TextFormField(
-                        controller: emailController,
+                        controller: usernameController,
                         decoration: InputDecoration(
-                          labelText: 'E-mail',
-                          prefixIcon: Icon(Icons.email),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                          labelText: 'Username',
+                          border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Email is required';
-                          } else if (!value.contains('@')) {
-                            return 'Please enter a valid e-mail address';
+                            return 'Username is required';
                           }
                           return null;
                         },
@@ -101,19 +99,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         onPressed: () async {
-                          final success = await AuthService().login(emailController.text, passwordController.text);
+                          final success = await ApiServices().login(
+                            usernameController.text,
+                            passwordController.text,
+                          );
+
                           if (success) {
+                            SharedPreferences prefs = await SharedPreferences.getInstance();
+                            await prefs.setBool('isLoggedIn', true); // giriş yaptı olarak kaydet
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Login successful!')),
+                            );
+
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) => ProfileScreen()),
+                              MaterialPageRoute(builder: (context) => ProfileScreen()),
                             );
-                          } else {// hata mesajı
-                             ScaffoldMessenger.of(context).showSnackBar(
-                             SnackBar(content: Text("Login failed!")),
-                             );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Login failed!')),
+                            );
                           }
-
                         },
                         child: Text(
                           'Log in',

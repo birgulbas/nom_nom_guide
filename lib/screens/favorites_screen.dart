@@ -12,21 +12,45 @@ class FavoritesScreen extends StatelessWidget {
     final favorites = favoritesManager.favorites;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("FAVORITES")),
+      appBar: AppBar(
+          title: const Text("FAVORITES"), backgroundColor: Colors.deepOrangeAccent,),
       body: favorites.isEmpty
           ? const Center(
               child: Text("Favoriler burada listelenecek."),
             )
-          : ListView.builder(
-              itemCount: favorites.length,
-              itemBuilder: (context, index) {
-                final place = favorites[index];
-                return ListTile(
-                  title: Text(place.name),
-                  subtitle: Text(place.location),
-                );
-              },
+      : ListView.builder(
+        itemCount: favorites.length,
+        itemBuilder: (context, index) {
+          final place = favorites[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100, // Arka plan rengi
+                borderRadius: BorderRadius.circular(16), // Köşe yumuşatma
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 6,
+                    offset: const Offset(0, 3), // Gölge yönü
+                  ),
+                ],
+              ),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                title: Text(
+                  place.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(place.location),
+                leading: const Icon(Icons.favorite, color: Colors.red),
+                trailing: const Icon(Icons.arrow_forward_ios),
+              ),
             ),
+          );
+        },
+      )
     );
   }
 }
