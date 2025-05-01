@@ -191,7 +191,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Hata: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Mekan bulunamadı.'));
+                  return const Center(child: Text('Places not found.'));
                 }
 
                 final placeList = snapshot.data!;
