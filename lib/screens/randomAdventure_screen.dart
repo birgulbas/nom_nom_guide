@@ -78,7 +78,7 @@ class _RandomAdventureScreenState extends State<RandomAdventureScreen> with Sing
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 255, 255, 0.995), // arkaplan 
      appBar: AppBar(
-  title: const Text('Near by Places'),
+  title: const Text('Random Adventure'),
   backgroundColor: Colors.pink.shade600, 
 ),
 
