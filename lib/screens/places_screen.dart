@@ -258,7 +258,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
               itemCount: _reviews.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                   title: Text('${_reviews[index].username}: ${_reviews[index].comment}'),
+                    title: Text(_reviews[index].comment),
                   subtitle: Text('Rating: ${_reviews[index].rating}'),
                 );
               },
