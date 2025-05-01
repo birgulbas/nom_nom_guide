@@ -186,7 +186,7 @@ class ApiServices {
   // yorum ekleme fonksiyonu
   Future<void> addReview(int placeId, String comment, int rating) async {
     final token = await getToken();
-    String url = '$baseUrl/places/$placeId/reviews/add/';
+    String url = '$baseUrl/places/$placeId/reviews/';
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
@@ -200,7 +200,7 @@ class ApiServices {
 
     try {
       final response = await http.post(
-        Uri.parse(url),
+         Uri.parse('$baseUrl/places/$placeId/review/'),
         headers: headers,
         body: json.encode(body),
       );
