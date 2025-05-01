@@ -1,13 +1,13 @@
 // models/review.dart
 class Review {
   final int id;
-  final String user;
+  final String username;
   final String comment;
   final int rating;
 
   Review({
     required this.id,
-    required this.user,
+    required this.username,
     required this.comment,
     required this.rating,
   });
@@ -16,7 +16,7 @@ class Review {
   factory Review.fromJson(Map<String, dynamic> json) {
     return Review(
       id: json['id'],
-      user: json['user'],
+      username: json['username'],
       comment: json['comment'],
       rating: json['rating'],
     );
@@ -26,7 +26,7 @@ class Review {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'user': user,
+      'username': username,
       'comment': comment,
       'rating': rating,
     };
