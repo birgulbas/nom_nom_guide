@@ -43,7 +43,7 @@ class ApiServices {
         }).toList();
       } catch (e) {
         print('Kategori verisi parse hatası: $e');
-        throw Exception('Kategori verisi işlenemedi.');
+        throw Exception('Category data could not be processed.');
       }
     } else {
       print('Kategori yükleme başarısız: ${response.statusCode}');
@@ -94,11 +94,11 @@ class ApiServices {
         final data = decoded is List ? decoded : decoded['results'];
         return data.map<Place>((json) => Place.fromJson(json)).toList();
       } else {
-        throw Exception('Mekanlar yüklenemedi (Status: ${response.statusCode})');
+        throw Exception('Locations could not be loaded (Status: ${response.statusCode})');
       }
     } catch (e) {
-      print('Veri çekerken hata: $e');
-      throw Exception('Veri alınırken hata oluştu: $e');
+      print('Error while fetching data: $e');
+      throw Exception('An error occurred while retrieving data: $e');
     }
   }
 
@@ -127,11 +127,11 @@ class ApiServices {
         final data = decoded is List ? decoded : decoded['results'];
         return data.map<Review>((json) => Review.fromJson(json)).toList();
       } else {
-        throw Exception('Yorumlar yüklenemedi (Status: ${response.statusCode})');
+        throw Exception('Comments failed to load (Status: ${response.statusCode})');
       }
     } catch (e) {
-      print('Veri çekerken hata: $e');
-      throw Exception('Yorumlar alınırken hata oluştu: $e');
+      print('Error while fetching data: $e');
+      throw Exception('An error occurred while retrieving comments: $e');
     }
   }
 
@@ -154,11 +154,11 @@ class ApiServices {
         // API'den gelen yanıtla favori durumu döndürülüyor
         return decoded['isFavorite'] ?? false;
       } else {
-        throw Exception('Favori durumu alınamadı (Status: ${response.statusCode})');
+        throw Exception('Favorite status could not be retrieved (Status: ${response.statusCode})');
       }
     } catch (e) {
-      print('Favori durumu kontrol edilirken hata: $e');
-      throw Exception('Favori durumu kontrol edilirken hata oluştu: $e');
+      print('Error checking favorite status: $e');
+      throw Exception('An error occurred while checking the favorite status.: $e');
     }
   }
 
@@ -175,10 +175,10 @@ class ApiServices {
     try {
       final response = await http.post(Uri.parse(url), headers: headers);
       if (response.statusCode != 200) {
-        throw Exception('Favori durumu güncellenemedi (Status: ${response.statusCode})');
+        throw Exception('Favorite status could not be updated (Status: ${response.statusCode})');
       }
     } catch (e) {
-      print('Favori durumu güncellenirken hata: $e');
+      print('Error while updating favorite status: $e');
       throw Exception('Favori durumu güncellenirken hata oluştu: $e');
     }
   }
@@ -206,13 +206,13 @@ class ApiServices {
       );
 
       if (response.statusCode == 201) {
-        print('Yorum başarıyla eklendi!');
+        print('Review added successfully!!');
       } else {
-        throw Exception('Yorum eklenemedi (Status: ${response.statusCode})');
+        throw Exception('Comment could not be added (Status: ${response.statusCode})');
       }
     } catch (e) {
-      print('Yorum eklerken hata: $e');
-      throw Exception('Yorum eklenirken hata oluştu: $e');
+      print('Error adding review: $e');
+      throw Exception('An error occurred while adding a comment: $e');
     }
   }
 // Kayıt ol
