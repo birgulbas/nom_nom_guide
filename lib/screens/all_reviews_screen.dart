@@ -1,7 +1,6 @@
 // lib/screens/all_reviews_screen.dart
 import 'package:flutter/material.dart';
-import 'package:nom_nom_guide/models/review.dart'; // Doğru import bu
-
+import 'package:nom_nom_guide/models/review.dart'; 
 class AllReviewsScreen extends StatelessWidget {
   final List<Review> reviews;
 
