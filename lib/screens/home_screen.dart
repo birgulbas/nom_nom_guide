@@ -103,8 +103,6 @@ class HomeScreenContent extends StatelessWidget {
               _buildCustomListTile(
                   context, "Concept Places", Icons.category, Colors.blue.shade300, CategoryPlaceScreen()),
               _buildCustomListTile(
-                  context, "User Favorites", Icons.star, Colors.green.shade300, FavoritesPlacesScreen()),
-              _buildCustomListTile(
                   context, "Random Adventure", Icons.casino, Colors.orange.shade300, RandomAdventureScreen()),
             ],
           ),
