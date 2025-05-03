@@ -6,10 +6,10 @@ import 'package:nom_nom_guide/services/api_services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';  
+import 'package:url_launcher/url_launcher.dart';
 import 'all_reviews_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert'; // json işleme için
+import 'dart:convert';
 
 class PlaceScreen extends StatefulWidget {
   final Place place;
@@ -23,139 +23,122 @@ class PlaceScreen extends StatefulWidget {
 class _PlaceScreenState extends State<PlaceScreen> {
   final TextEditingController _commentController = TextEditingController();
   int _rating = 0;
-  List<Review> allReviews = [];
   List<Review> _reviews = [];
   bool isLoadingReviews = true;
-  bool isFavorite = false; // favori durumu
-
-String? _username;
+  bool isFavorite = false;
+  String? _username;
 
   @override
   void initState() {
     super.initState();
-     _loadUsername();
-    _loadData();
-    _fetchReviews(); // yorumları başlatırken çağrılıyor
-    _checkIfFavorite(); // favori durumu kontrolü
     _loadUsername();
+    _loadData();
+    _fetchReviews();
+    _checkIfFavorite();
   }
 
- void _loadUsername() async {
-  final prefs = await SharedPreferences.getInstance();
-  setState(() {
-    _username = prefs.getString('username');
-  });
-}
-
-void _loadData() async {
-  final prefs = await SharedPreferences.getInstance();
-
-  // SharedPreferences'ten 'reviews' adında bir JSON dizisi al
-  String? reviewsJson = prefs.getString('reviews_${widget.place.id}');
-  
-  // Eğer 'reviews' verisi varsa, JSON'dan Review listesine dönüştür
-  if (reviewsJson != null) {
-    List<dynamic> reviewsList = jsonDecode(reviewsJson);
+  void _loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
+      _username = prefs.getString('username');
     });
   }
 
-  setState(() {
-    isLoadingReviews = false;
-  });
-}
-//
+  void _loadData() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? reviewsJson = prefs.getString('reviews_${widget.place.id}');
+    if (reviewsJson != null) {
+      List<dynamic> reviewsList = jsonDecode(reviewsJson);
+      setState(() {
+        _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
+      });
+    }
+    setState(() {
+      isLoadingReviews = false;
+    });
+  }
 
-void _showEditDialog(Review review) {
-  final TextEditingController editController =
-      TextEditingController(text: review.comment);
-  int editRating = review.rating;
+  void _showEditDialog(Review review) {
+    final TextEditingController editController = TextEditingController(text: review.comment);
+    int editRating = review.rating;
 
-  showDialog(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('Edit your comment'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: editController,
-            maxLines: 3,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Update your comment...',
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit your comment'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: editController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Update your comment...',
+              ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: List.generate(5, (index) {
+                return IconButton(
+                  icon: Icon(
+                    index < editRating ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      editRating = index + 1;
+                    });
+                  },
+                );
+              }),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: List.generate(5, (index) {
-              return IconButton(
-                icon: Icon(
-                  index < editRating ? Icons.star : Icons.star_border,
-                  color: Colors.amber,
-                ),
-                onPressed: () {
-                  setState(() {
-                    editRating = index + 1;
-                  });
-                },
+          ElevatedButton(
+            onPressed: () async {
+              if (editController.text.isEmpty || editRating == 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please fill in all fields.")),
+                );
+                return;
+              }
+
+              final prefs = await SharedPreferences.getInstance();
+              setState(() {
+                final index = _reviews.indexWhere((r) => r.id == review.id);
+                if (index != -1) {
+                  _reviews[index] = Review(
+                    id: review.id,
+                    username: review.username,
+                    comment: editController.text,
+                    rating: editRating,
+                    createdAt: review.createdAt,
+                  );
+                }
+              });
+
+              prefs.setString(
+                'reviews_${widget.place.id}',
+                jsonEncode(_reviews.map((r) => r.toJson()).toList()),
               );
-            }),
+
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text("Comment updated.")),
+              );
+            },
+            child: const Text('Save'),
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () async {
-            if (editController.text.isEmpty || editRating == 0) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text("Please fill in all fields.")),
-              );
-              return;
-            }
-
-            // Güncelle
-            final prefs = await SharedPreferences.getInstance();
-            setState(() {
-              final index =
-                  _reviews.indexWhere((r) => r.id == review.id);
-              if (index != -1) {
-                _reviews[index] = Review(
-                  id: review.id,
-                  username: review.username,
-                  comment: editController.text,
-                  rating: editRating,
-                  createdAt: review.createdAt,
-                );
-              }
-            });
-
-            prefs.setString(
-              'reviews_${widget.place.id}',
-              jsonEncode(_reviews.map((r) => r.toJson()).toList()),
-            );
-
-            Navigator.pop(context);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Comment updated.")),
-            );
-          },
-          child: const Text('Save'),
-        ),
-      ],
-    ),
-  );
-}
-
-
-//
-
-
+    );
+  }
 
   void _checkIfFavorite() {
     setState(() {
@@ -183,118 +166,110 @@ void _showEditDialog(Review review) {
       ),
     );
   }
-  //
 
-void _deleteReview(Review reviewToDelete) async {
-  // SharedPreferences'tan kullanıcı adını al
-  final prefs = await SharedPreferences.getInstance();
-  final username = prefs.getString('username');
+  void _deleteReview(Review reviewToDelete) async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('username');
 
-  // Kullanıcı yalnızca kendi yorumunu silebilir
-  if (reviewToDelete.username != username) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("You can only delete your own comments.")),
-    );
-    return;
-  }
+    if (reviewToDelete.username != username) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("You can only delete your own comments.")),
+      );
+      return;
+    }
 
-  // Silme işlemi
-  setState(() {
-    _reviews.removeWhere((review) => review.id == reviewToDelete.id);
-  });
+    String? reviewsJson = prefs.getString('reviews_${widget.place.id}');
+    if (reviewsJson == null) return;
 
-  // Yorumları güncelle
-  prefs.setString(
-    'reviews_${widget.place.id}',
-    jsonEncode(_reviews.map((review) => review.toJson()).toList()),
-  );
+    List<dynamic> reviewsList = jsonDecode(reviewsJson);
+    List<Review> allReviews = reviewsList.map((review) => Review.fromJson(review)).toList();
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Your comment has been deleted.")),
-  );
-}
+    List<Review> updatedReviews = allReviews.where((r) => r.id != reviewToDelete.id).toList();
 
-  //
-
-Future<void> _fetchReviews() async {
-  try {
-    final prefs = await SharedPreferences.getInstance(); 
-    final token = prefs.getString('token');
-    final placeId = widget.place.id; 
-    final reviews = await ApiServices.fetchReviews(placeId);  
-    setState(() {
-      _reviews = reviews;
-    });
-  } catch (e) {
-    print('Error while retrieving comments: $e');
-  }
-}
-
-// yorum ekleme
-
-
-  Future<void> _addReview() async {
-
-  final prefs = await SharedPreferences.getInstance();
-  final username = prefs.getString('username');
-
-  //giriş yapmış mı
-if (username == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("User not logged in.")),
-    );
-    return;
-  }
-
-  // daha ömce yorum yapmış mı
-  bool alreadyCommented = _reviews.any((review) => review.username == username);
-  if (alreadyCommented) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("You have already submitted a comment.")),
-    );
-    return;
-  }
-
-  if (_commentController.text.isEmpty || _rating == 0) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Please enter comments and ratings.")),
-    );
-    return;
-  }
-
-
-  try {
-    // Yeni yorum oluştur
-    final newReview = Review(
-      id: 1,
-      username: username,  
-      comment: _commentController.text,
-      rating: _rating,
-      createdAt: DateTime.now(),
-    );
-    
-    
-    List<Review> updatedReviews = [..._reviews, newReview];
     prefs.setString(
       'reviews_${widget.place.id}',
       jsonEncode(updatedReviews.map((review) => review.toJson()).toList()),
     );
-    // Yorumlar 
+
     setState(() {
       _reviews = updatedReviews;
     });
 
-    _commentController.clear();
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Your comment has been sent successfully.")),
-    );
-  } catch (e) {
-    print('Error while adding comment: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Comment could not be added.")),
+      const SnackBar(content: Text("Your comment has been deleted.")),
     );
   }
-}
+
+  Future<void> _fetchReviews() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final reviewsJson = prefs.getString('reviews_${widget.place.id}');
+      if (reviewsJson != null) {
+        final List<dynamic> decoded = jsonDecode(reviewsJson);
+        setState(() {
+          _reviews = decoded.map((r) => Review.fromJson(r)).toList();
+        });
+      }
+    } catch (e) {
+      print('Error while retrieving comments: $e');
+    }
+  }
+
+  Future<void> _addReview() async {
+    final prefs = await SharedPreferences.getInstance();
+    final username = prefs.getString('username');
+
+    if (username == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("User not logged in.")),
+      );
+      return;
+    }
+
+    bool alreadyCommented = _reviews.any((review) => review.username == username);
+    if (alreadyCommented) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("You have already submitted a comment.")),
+      );
+      return;
+    }
+
+    if (_commentController.text.isEmpty || _rating == 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter comments and ratings.")),
+      );
+      return;
+    }
+
+    try {
+      final newReview = Review(
+        id: DateTime.now().millisecondsSinceEpoch,
+        username: username,
+        comment: _commentController.text,
+        rating: _rating,
+        createdAt: DateTime.now(),
+      );
+
+      List<Review> updatedReviews = [..._reviews, newReview];
+      prefs.setString(
+        'reviews_${widget.place.id}',
+        jsonEncode(updatedReviews.map((review) => review.toJson()).toList()),
+      );
+      setState(() {
+        _reviews = updatedReviews;
+      });
+
+      _commentController.clear();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Your comment has been sent successfully.")),
+      );
+    } catch (e) {
+      print('Error while adding comment: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Comment could not be added.")),
+      );
+    }
+  }
   
 
   String _translateCategory(String category) {
