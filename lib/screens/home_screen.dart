@@ -99,7 +99,7 @@ class HomeScreenContent extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             children: <Widget>[
               _buildCustomListTile(
-                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()), //yakındaki mekanların sayfasını eklemek için
+                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()), 
               _buildCustomListTile(
                   context, "Concept Places", Icons.category, Colors.blue.shade300, CategoryPlaceScreen()),
               _buildCustomListTile(
@@ -111,7 +111,7 @@ class HomeScreenContent extends StatelessWidget {
     );
   }
 
-  // Tıklanınca yeni sayfa açar
+  // tıklanınca yeni sayfa açar
   Widget _buildCustomListTile(BuildContext context, String title, IconData icon, Color bgColor, Widget targetScreen) {
     return Container( //yakındaki mekanların divleri
       margin: EdgeInsets.only(bottom: 10),
