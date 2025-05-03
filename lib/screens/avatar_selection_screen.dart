@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AvatarSelectionScreen extends StatelessWidget {
-  AvatarSelectionScreen({Key? key}) : super(key: key);
+  AvatarSelectionScreen({super.key});
 
   final List<String> avatarPaths = [
     'assets/images/avatar1.png',

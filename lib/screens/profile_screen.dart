@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:nom_nom_guide/screens/avatar_selection_screen.dart';
 import 'package:nom_nom_guide/screens/my_comments_screen.dart';
@@ -9,11 +7,10 @@ import 'package:nom_nom_guide/screens/login_screen.dart';
 import 'package:nom_nom_guide/screens/changePassword_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nom_nom_guide/services/api_services.dart';
-import 'package:flutter/material.dart';
 
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -138,11 +135,11 @@ class LoggedInView extends StatelessWidget {
   final Function(String) onAvatarChanged;
 
   const LoggedInView({
-    Key? key,
+    super.key,
     required this.avatarPath,
     required this.username,
     required this.onAvatarChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

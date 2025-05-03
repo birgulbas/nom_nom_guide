@@ -3,9 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:nom_nom_guide/models/place.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nom_nom_guide/models/review.dart';
-import 'package:flutter/foundation.dart';
-import 'dart:io' show Platform;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class ApiServices {
   // Base url apinin
@@ -70,7 +67,7 @@ class ApiServices {
     if (minRating != null) queryParams['min_rating'] = minRating.toString();
     if (hasWifi != null) queryParams['wifi'] = hasWifi.toString();
 
-    // Eğer herhangi bir filtre varsa URL'ye ekliyoruz
+    // Eğer herhangi bir filtre varsa urlye ekliyoruz
     if (queryParams.isNotEmpty) {
       url += '?${Uri(queryParameters: queryParams).query}';
     }
@@ -109,31 +106,31 @@ class ApiServices {
   }
 
   // yorumları apiden çekme fonksiyonu
-  Future<List<Review>> getReviews(int placeId) async {
-    final token = await getToken();
-    String url = '$baseUrl/places/$placeId/reviews/';
+static Future<List<Review>> fetchReviews(int placeId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
 
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-
-    try {
-      final response = await http.get(Uri.parse(url), headers: headers);
-
-      if (response.statusCode == 200) {
-        final decodedBody = utf8.decode(response.bodyBytes); // Türkçe karakter desteği
-        final decoded = json.decode(decodedBody);
-        final data = decoded is List ? decoded : decoded['results'];
-        return data.map<Review>((json) => Review.fromJson(json)).toList();
-      } else {
-        throw Exception('Comments failed to load (Status: ${response.statusCode})');
-      }
-    } catch (e) {
-      print('Error while fetching data: $e');
-      throw Exception('An error occurred while retrieving comments: $e');
-    }
+  if (token == null) {
+    throw Exception('No token found.');
   }
+
+  final response = await http.get(
+    Uri.parse('$baseUrl/reviews/?place_id=$placeId'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.map((item) => Review.fromJson(item)).toList();
+  } else {
+    throw Exception('Comments could not be loaded.');
+  }
+}
+
+
 
   // favori durumunu kontrol etme
   Future<bool> isFavorite(int placeId) async {
@@ -407,5 +404,100 @@ class ApiServices {
       return false;
     }
   }
+
+
+
+
+// yorum silme fonk
+static Future<bool> deleteReview(int reviewId) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  final response = await http.delete(
+    Uri.parse('$baseUrl/reviews/$reviewId/'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+  );
+
+  return response.statusCode == 200;
+}
+
+// yorum güncelleme fonksiyonu
+static Future<bool> updateReview({
+  required int reviewId,
+  String? updatedComment,
+  int? updatedRating,
+}) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  if (token == null) {
+    print('Token bulunamadı!');
+    return false;
+  }
+
+  Map<String, dynamic> updatedData = {};
+  if (updatedComment != null) {
+    updatedData['comment'] = updatedComment;
+  }
+  if (updatedRating != null) {
+    updatedData['rating'] = updatedRating;
+  }
+
+  if (updatedData.isEmpty) {
+    print('Güncellenecek veri yok!');
+    return false;
+  }
+
+  final response = await http.patch(
+    Uri.parse('$baseUrl/reviews/$reviewId/'),
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Content-Type': 'application/json',
+    },
+    body: jsonEncode(updatedData),
+  );
+
+  if (response.statusCode == 200) {
+    print('Yorum başarıyla güncellendi.');
+    return true;
+  } else {
+    print('Yorum güncelleme hatası: ${response.statusCode} - ${response.body}');
+    return false;
+  }
+}
+
+
+// yorum ekleme
+static Future<bool> _addReview(int placeId, String comment, int rating) async {
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+
+  if (token == null) throw Exception("Token bulunamadı. Giriş yapılmamış.");
+
+  final url = Uri.parse('$baseUrl/places/$placeId/add_review/');
+  final response = await http.post(
+    url,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+    body: jsonEncode({
+      'comment': comment,
+      'rating': rating,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    return true;
+  } else if (response.statusCode == 400) {
+    final body = jsonDecode(response.body);
+    throw Exception(body['error'] ?? "Yorum eklenemedi.");
+  } else {
+    throw Exception("Sunucu hatası: ${response.statusCode}");
+  }
+}
 
 }
