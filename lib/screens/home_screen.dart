@@ -4,8 +4,10 @@ import 'profile_screen.dart';
 import 'settings_screen.dart';
 import 'nearbyPlaces_screen.dart';
 import 'category_screen.dart';
-import 'userFavorites_screen.dart';
 import 'randomAdventure_screen.dart';
+import 'package:nom_nom_guide/models/place.dart';
+import 'package:nom_nom_guide/services/api_services.dart';  
+import 'places_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,20 +60,76 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 // Ana Sayfa İçeriği
-class HomeScreenContent extends StatelessWidget {
+class HomeScreenContent extends StatefulWidget {
   const HomeScreenContent({super.key});
+
+  @override
+  State<HomeScreenContent> createState() => _HomeScreenContentState();
+}
+
+class _HomeScreenContentState extends State<HomeScreenContent> {
+  final TextEditingController _searchController = TextEditingController();
+  List<Place> _places = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlaces();
+  }
+
+  Future<void> _fetchPlaces() async {
+    try {
+      // getPlaces fonksiyonunu çağırarak kafeleri çekiyoruz.
+      final places = await ApiServices().getPlaces(
+        category: null, // Kategoriyi burada belirleyebilirsiniz
+        price: null, // Fiyat aralığı
+        minRating: null, // Minimum puan
+        hasWifi: null, // WiFi durumu
+      );
+      setState(() {
+        _places = places;
+      });
+    } catch (e) {
+      print("Yerler alınamadı: $e");
+    }
+  }
+
+
+  void _handleSearch() {
+    String query = _searchController.text.toLowerCase().trim();
+
+   Place? matchedPlace;
+try {
+  matchedPlace = _places.firstWhere((place) => place.name.toLowerCase() == query);
+} catch (e) {
+  matchedPlace = null;
+}
+
+
+
+    if (matchedPlace != null) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PlaceScreen(place: matchedPlace!), // dikkat: matchedPlace!
+    ),
+  );
+}
+ else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Yok öyle bir kafe.")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        // LOGO RESMİ & ARKAPLAN
         Container(
-          width: double.infinity, 
-          height: 200, 
-          decoration: BoxDecoration(
-            color: Colors.deepOrange.shade100, // Arka plan rengi
-          ),
+          width: double.infinity,
+          height: 200,
+          decoration: BoxDecoration(color: Colors.deepOrange.shade100),
           child: Center(
             child: Image.asset(
               'assets/images/logo.png',
@@ -80,26 +138,27 @@ class HomeScreenContent extends StatelessWidget {
             ),
           ),
         ),
-
-        // ARAMA ÇUBUĞU
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: TextField(
+            controller: _searchController,
+            onSubmitted: (_) => _handleSearch(),
             decoration: InputDecoration(
               labelText: 'Search Cafes & Restaurants',
               border: OutlineInputBorder(),
-              suffixIcon: Icon(Icons.search),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: _handleSearch,
+              ),
             ),
           ),
         ),
-
-        // KATEGORİLER 
         Expanded(
           child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             children: <Widget>[
               _buildCustomListTile(
-                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()), 
+                  context, "Nearby Places", Icons.location_on, Colors.pink.shade300, NearbyScreen()),
               _buildCustomListTile(
                   context, "Concept Places", Icons.category, Colors.blue.shade300, CategoryPlaceScreen()),
               _buildCustomListTile(
@@ -111,10 +170,9 @@ class HomeScreenContent extends StatelessWidget {
     );
   }
 
-  // tıklanınca yeni sayfa açar
   Widget _buildCustomListTile(BuildContext context, String title, IconData icon, Color bgColor, Widget targetScreen) {
-    return Container( //yakındaki mekanların divleri
-      margin: EdgeInsets.only(bottom: 10),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(10),
@@ -123,11 +181,7 @@ class HomeScreenContent extends StatelessWidget {
         leading: Icon(icon, color: Colors.white),
         title: Text(
           title,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         onTap: () {
           Navigator.push(
@@ -138,4 +192,4 @@ class HomeScreenContent extends StatelessWidget {
       ),
     );
   }
-}   
+}
