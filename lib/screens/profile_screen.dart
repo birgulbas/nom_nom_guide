@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:nom_nom_guide/screens/avatar_selection_screen.dart';
-import 'package:nom_nom_guide/screens/my_comments_screen.dart';
-import 'package:nom_nom_guide/screens/my_ratings_screen.dart';
 import 'package:nom_nom_guide/screens/userInfo_screen.dart';
 import 'package:nom_nom_guide/screens/login_screen.dart';
 import 'package:nom_nom_guide/screens/changePassword_screen.dart';
@@ -80,6 +78,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), color:Colors.white,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         title: const Text("My Profiles"),
         backgroundColor: Colors.pink,
         titleTextStyle: TextStyle(
@@ -87,7 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
-    ),
+      ),
 
       body: isLoggedIn
           ? LoggedInView(
@@ -189,20 +193,7 @@ class LoggedInView extends StatelessWidget {
           color: Colors.lightGreen,
           destination: const UserInfoScreen(),
         ),
-        _buildTile(
-          context,
-          icon: Icons.comment,
-          text: "My Comments",
-          color: Colors.deepOrangeAccent,
-          destination: MyCommentsScreen(username: username),
-        ),
-        _buildTile(
-          context,
-          icon: Icons.star_border,
-          text: "My Ratings",
-          color: Colors.orangeAccent,
-          destination: MyRatingsScreen(username: username),
-        ),
+
         _buildTile(
           context,
           icon: Icons.logout,

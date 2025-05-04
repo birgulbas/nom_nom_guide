@@ -42,6 +42,7 @@ dependencies:
   latlong2: ^0.9.1 #mesafe hesaplama için-bp
   geocoding: ^2.1.0 #bp
   provider: ^6.1.4 #bp
+
   
 
 

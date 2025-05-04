@@ -105,33 +105,6 @@ class ApiServices {
     return prefs.getString('token');
   }
 
-  // yorumları apiden çekme fonksiyonu
-static Future<List<Review>> fetchReviews(int placeId) async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
-
-  if (token == null) {
-    throw Exception('No token found.');
-  }
-
-  final response = await http.get(
-    Uri.parse('$baseUrl/reviews/?place_id=$placeId'),
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Content-Type': 'application/json',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    List<dynamic> jsonData = json.decode(response.body);
-    return jsonData.map((item) => Review.fromJson(item)).toList();
-  } else {
-    throw Exception('Comments could not be loaded.');
-  }
-}
-
-
-
   // favori durumunu kontrol etme
   Future<bool> isFavorite(int placeId) async {
     final token = await getToken();
@@ -180,35 +153,7 @@ static Future<List<Review>> fetchReviews(int placeId) async {
     }
   }
 
-  // yorum ekleme fonksiyonu
-static Future<bool> addReview(int placeId, String comment, int rating) async {
-  final prefs = await SharedPreferences.getInstance();
-  final token = prefs.getString('token');
 
-  if (token == null) throw Exception("Token bulunamadı. Giriş yapılmamış.");
-
-  final url = Uri.parse('$baseUrl/places/$placeId/add_review/');
-  final response = await http.post(
-    url,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-    body: jsonEncode({
-      'comment': comment,
-      'rating': rating,
-    }),
-  );
-
-  if (response.statusCode == 201) {
-    return true;
-  } else if (response.statusCode == 400) {
-    final body = jsonDecode(response.body);
-    throw Exception(body['error'] ?? "Yorum eklenemedi.");
-  } else {
-    throw Exception("Sunucu hatası: ${response.statusCode}");
-  }
-}
 // Kayıt ol
   Future<bool> register(String firstName, String lastName, String username, String email, String password) async {
     final response = await http.post(
@@ -310,27 +255,6 @@ static Future<bool> addReview(int placeId, String comment, int rating) async {
       return false;
     }
   }
-  // Kullanıcının yaptığı yorumları getir
-  Future<List<dynamic>> getUserComments(String username) async {
-    final response = await http.get(Uri.parse('$baseUrl/comments/?username=$username'));
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load comments');
-    }
-  }
-
-  // Kullanıcının yaptığı yıldızlamaları getir
-  Future<List<dynamic>> getUserRatings(String username) async {
-    final response = await http.get(Uri.parse('$baseUrl/ratings/?username=$username'));
-
-    if (response.statusCode == 200) {
-      return json.decode(response.body);
-    } else {
-      throw Exception('Failed to load ratings');
-    }
-  }
 
   // Kullanıcı bilgilerini getir
   Future<Map<String, dynamic>?> getUserInfo() async {
@@ -402,7 +326,75 @@ static Future<bool> addReview(int placeId, String comment, int rating) async {
     }
   }
 
+  // yorumları apiden çekme fonksiyonu
+  static Future<List<Review>> fetchReviews(int placeId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
 
+    if (token == null) {
+      throw Exception('No token found.');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/reviews/?place_id=$placeId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonData = json.decode(response.body);
+      return jsonData.map((item) => Review.fromJson(item)).toList();
+    } else {
+      throw Exception('Comments could not be loaded.');
+    }
+  }
+
+  // yorum ekleme fonksiyonu
+  static Future<bool> addReview(int placeId, String comment, int rating) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null) throw Exception("Token bulunamadı. Giriş yapılmamış.");
+
+    final url = Uri.parse('$baseUrl/places/$placeId/add_review/');
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'comment': comment,
+        'rating': rating,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      return true;
+    } else if (response.statusCode == 400) {
+      final body = jsonDecode(response.body);
+      throw Exception(body['error'] ?? "Yorum eklenemedi.");
+    } else {
+      throw Exception("Sunucu hatası: ${response.statusCode}");
+    }
+  }
+
+// Kullanıcının yaptığı yorum ve yıldızları birlikte al
+  Future<List<Review>> getUserReviews(String username) async {
+    final url = Uri.parse('$baseUrl/user_reviews/?username=$username');
+    print("İstek URL'si: $url");  // Burayı ekle
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonData = json.decode(response.body);
+      // Veriyi Review nesnelerine dönüştürme
+      return jsonData.map((e) => Review.fromJson(e)).toList();
+    } else {
+      throw Exception('Yorumlar ve yıldızlar alınamadı.');
+    }
+  }
 
 
 // yorum silme fonk
