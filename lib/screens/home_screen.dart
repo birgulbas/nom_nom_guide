@@ -46,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         showUnselectedLabels: false,
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        selectedItemColor: Colors.pink.shade600, //olduğun sayfanın rengini koyulaştırır
+        selectedItemColor: Colors.pink.shade600, 
         unselectedItemColor: Colors.grey,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'HomePage'),
@@ -117,7 +117,7 @@ try {
 }
  else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Yok öyle bir kafe.")),
+        const SnackBar(content: Text("There is no such cafe.")),
       );
     }
   }
