@@ -22,7 +22,7 @@ class PlaceScreen extends StatefulWidget {
 
 class _PlaceScreenState extends State<PlaceScreen> {
   final TextEditingController _commentController = TextEditingController();
-  int _rating = 0;
+  double _rating = 0.0;
   List<Review> _reviews = [];
   bool isLoadingReviews = true;
   bool isFavorite = false;
@@ -35,6 +35,8 @@ class _PlaceScreenState extends State<PlaceScreen> {
     _loadData();
     _fetchReviews();
     _checkIfFavorite();
+    double averageRating = 0.0;
+
   }
 
   void _loadUsername() async {
@@ -52,6 +54,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
       setState(() {
         _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
       });
+      _calculateAverageRating();
     }
     setState(() {
       isLoadingReviews = false;
@@ -60,7 +63,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
 
   void _showEditDialog(Review review) {
     final TextEditingController editController = TextEditingController(text: review.comment);
-    int editRating = review.rating;
+   double editRating = review.rating;
 
     showDialog(
       context: context,
@@ -127,6 +130,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
                 'reviews_${widget.place.id}',
                 jsonEncode(_reviews.map((r) => r.toJson()).toList()),
               );
+_calculateAverageRating();
 
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
@@ -194,6 +198,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
     setState(() {
       _reviews = updatedReviews;
     });
+    _calculateAverageRating();
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text("Your comment has been deleted.")),
@@ -209,6 +214,7 @@ class _PlaceScreenState extends State<PlaceScreen> {
         setState(() {
           _reviews = decoded.map((r) => Review.fromJson(r)).toList();
         });
+        _calculateAverageRating();
       }
     } catch (e) {
       print('Error while retrieving comments: $e');
@@ -270,7 +276,26 @@ class _PlaceScreenState extends State<PlaceScreen> {
       );
     }
   }
-  
+
+
+
+
+ void _calculateAverageRating() {
+  if (_reviews.isEmpty) {
+    setState(() {
+      widget.place.rating = 0.0;  
+    });
+    return;
+  }
+
+  double average = _reviews.map((r) => r.rating).reduce((a, b) => a + b) / _reviews.length;
+
+  setState(() {
+    widget.place.rating = average;
+  });
+}
+
+
 
   String _translateCategory(String category) {
     switch (category) {
@@ -377,11 +402,11 @@ class _PlaceScreenState extends State<PlaceScreen> {
   children: [
     const Icon(Icons.location_on, size: 20, color: Colors.blue),
     const SizedBox(width: 5),
-    Expanded( // adresin sığmaması durumunda taşmasını engeller
+    Expanded( // adresin sığmaması durumunda taşırmaz
       child: Text(
         widget.place.location,
-        overflow: TextOverflow.ellipsis, // metin taşarsa üç nokta  ekle
-        softWrap: true, // metin fazlaysa  alt satıra geçer
+        overflow: TextOverflow.ellipsis, // metin taşarsa üç nokta  
+        softWrap: true, // metin fazlaysa  alt satıra
       ),
     ),
   ],
@@ -425,6 +450,24 @@ class _PlaceScreenState extends State<PlaceScreen> {
               ),
               onPressed: _toggleFavorite,
             ),
+
+
+if (_reviews.isNotEmpty)
+  Row(
+    children: [
+      const Icon(Icons.star, color: Colors.amber),
+      const SizedBox(width: 5),
+      Text(
+        (_reviews.map((r) => r.rating).reduce((a, b) => a + b) / _reviews.length)
+            .toStringAsFixed(1),
+        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    ],
+  ),
+
+
+
+
             const Text(
               'Reviews',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -502,22 +545,25 @@ if (_reviews.length > 3)
               ),
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: List.generate(5, (index) {
-                return IconButton(
-                  icon: Icon(
-                    index < _rating ? Icons.star : Icons.star_border,
-                    color: Colors.amber,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _rating = index + 1;
-                    });
-                  },
-                );
-              }),
-            ),
+           Row(
+  mainAxisAlignment: MainAxisAlignment.start,
+  children: List.generate(5, (index) {
+    return IconButton(
+      icon: Icon(
+        index < _rating ? Icons.star : Icons.star_border,
+        color: Colors.amber,
+      ),
+      onPressed: () {
+        setState(() {
+          _rating = (index + 1).toDouble();
+        });
+      },
+    );
+  }),
+),
+
+
+
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _addReview,

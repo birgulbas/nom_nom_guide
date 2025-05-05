@@ -1,9 +1,8 @@
-// lib/models/review.dart
 class Review {
   final int id;
   final String username;
   final String comment;
-  final int rating;
+  double rating;
   final DateTime createdAt;
 
   Review({
@@ -19,8 +18,8 @@ class Review {
       id: json['id'],
       username: json['username'],
       comment: json['comment'],
-      rating: json['rating'],
-       createdAt: DateTime.parse(json['createdAt']),
+      rating: (json['rating'] as num).toDouble(), 
+      createdAt: DateTime.parse(json['createdAt']),
     ); 
   }
 

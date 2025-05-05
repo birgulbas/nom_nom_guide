@@ -3,8 +3,9 @@ class Place {
   final String name;
   final String location;
   final String category;
-  final double rating;
-  final int totalReviews;
+  double rating;
+
+  int totalReviews;
   final String? description;
   final String priceRange;
   final bool hasWifi;

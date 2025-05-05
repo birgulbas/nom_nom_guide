@@ -51,55 +51,63 @@ class ApiServices {
 
   // Mekanları kategori ve filtrelere göre çekme fonksiyonu
   Future<List<Place>> getPlaces({
-    String? category,
-    String? searchQuery,
-    String? price,
-    double? minRating,
-    bool? hasWifi,
-  }) async {
-    String url = '$baseUrl/places/';
-    Map<String, String> queryParams = {};
+  String? category,
+  String? searchQuery,
+  String? price,
+  double? minRating,
+  bool? hasWifi,
+}) async {
+  String url = '$baseUrl/places/';
+  Map<String, String> queryParams = {};
 
-    // Filtreleme parametreleri
-    if (category != null) queryParams['category'] = category;
-    if (searchQuery != null) queryParams['search'] = searchQuery;
-    if (price != null) queryParams['price_range'] = price;
-    if (minRating != null) queryParams['min_rating'] = minRating.toString();
-    if (hasWifi != null) queryParams['wifi'] = hasWifi.toString();
+  // API'ye gönderilecek parametreler
+  if (category != null) queryParams['category'] = category;
+  if (searchQuery != null) queryParams['search'] = searchQuery;
+  if (price != null) queryParams['price_range'] = price;
+  if (hasWifi != null) queryParams['wifi'] = hasWifi.toString();
+  // minRating backend'e gönderilmeyecek — Flutter tarafında filtrelenecek
 
-    // Eğer herhangi bir filtre varsa urlye ekliyoruz
-    if (queryParams.isNotEmpty) {
-      url += '?${Uri(queryParameters: queryParams).query}';
-    }
-
-    final token = await getToken();
-    print('Kullanılan Token: $token');
-    print('İstek URL: $url');
-
-    Map<String, String> headers = {
-      'Content-Type': 'application/json',
-      if (token != null) 'Authorization': 'Bearer $token',
-    };
-
-    try {
-      final response = await http.get(Uri.parse(url), headers: headers);
-      print('Status: ${response.statusCode}');
-
-      if (response.statusCode == 200) {
-        final decodedBody = utf8.decode(response.bodyBytes); // Türkçe karakter
-        final decoded = json.decode(decodedBody);
-        final data = decoded is List ? decoded : decoded['results'];
-        return data.map<Place>((json) => Place.fromJson(json)).toList();
-      } else {
-        throw Exception('Locations could not be loaded (Status: ${response.statusCode})');
-      }
-    } catch (e) {
-      print('Error while fetching data: $e');
-      throw Exception('An error occurred while retrieving data: $e');
-    }
+  if (queryParams.isNotEmpty) {
+    url += '?${Uri(queryParameters: queryParams).query}';
   }
 
-  // SharedPreferences'tan token'ı alır
+  final token = await getToken();
+  print('Kullanılan Token: $token');
+  print('İstek URL: $url');
+
+  Map<String, String> headers = {
+    'Content-Type': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  };
+
+  try {
+    final response = await http.get(Uri.parse(url), headers: headers);
+    print('Status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      final decodedBody = utf8.decode(response.bodyBytes); // Türkçe karakter
+      final decoded = json.decode(decodedBody);
+      final data = decoded is List ? decoded : decoded['results'];
+
+      List<Place> placeList = data.map<Place>((json) => Place.fromJson(json)).toList();
+
+      // Flutter tarafında rating filtreleme
+      if (minRating != null) {
+        placeList = placeList.where((place) => place.rating >= minRating).toList();
+      }
+
+      return placeList;
+    } else {
+      throw Exception('Locations could not be loaded (Status: ${response.statusCode})');
+    }
+  } catch (e) {
+    print('Error while fetching data: $e');
+    throw Exception('An error occurred while retrieving data: $e');
+  }
+}
+
+
+  // sharedPreferencestan token'ı alır
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('token');
@@ -351,33 +359,39 @@ class ApiServices {
     }
   }
 
-  // yorum ekleme fonksiyonu
-  static Future<bool> addReview(int placeId, String comment, int rating) async {
+  // yorum ekleme fonk
+  
+  Future<bool> addReview(int placeId, String comment, int rating) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
 
     if (token == null) throw Exception("Token bulunamadı. Giriş yapılmamış.");
 
     final url = Uri.parse('$baseUrl/places/$placeId/add_review/');
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'comment': comment,
-        'rating': rating,
-      }),
-    );
 
-    if (response.statusCode == 201) {
-      return true;
-    } else if (response.statusCode == 400) {
-      final body = jsonDecode(response.body);
-      throw Exception(body['error'] ?? "Yorum eklenemedi.");
-    } else {
-      throw Exception("Sunucu hatası: ${response.statusCode}");
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'comment': comment,
+          'rating': rating,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        return true; // Başarılı istek
+      } else if (response.statusCode == 400) {
+        final body = jsonDecode(response.body);
+        throw Exception(body['error'] ?? "Yorum eklenemedi.");
+      } else {
+        throw Exception("Sunucu hatası: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Bir hata oluştu: $e");
     }
   }
 

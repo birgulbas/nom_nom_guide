@@ -18,7 +18,6 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
   List<Map<String, String>> categories = [];
 
   String? selectedPriceRange;
-  double minRating = 0.0;
   bool wifiOnly = false;
 
   @override
@@ -40,16 +39,20 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
     }
   }
 
-  void fetchPlaces() {
-    setState(() {
-      places = ApiServices().getPlaces(
-        category: selectedCategory,
-        price: selectedPriceRange,
-        minRating: minRating > 0.0 ? minRating : null,
-        hasWifi: wifiOnly ? true : null,
-      );
-    });
-  }
+ void fetchPlaces() {
+  final futurePlaces = ApiServices().getPlaces(
+    category: selectedCategory,
+    price: selectedPriceRange,
+    hasWifi: wifiOnly ? true : null,
+  );
+
+  setState(() {
+    places = futurePlaces;
+    
+  });
+}
+
+
 
   void onCategorySelected(String? categoryKey) {
     setState(() {
@@ -64,22 +67,22 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
       appBar: AppBar(title: const Text('Places')),
       body: Column(
         children: [
-          // Kategori, fiyat ve WiFi 
+          // Kategori, fiyat ve WiFi
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal, // yatay kaydırma 
+              scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  // Category Dropdown
+                  // Category
                   SizedBox(
-                    width: 160, // Sabit genişlik ekleyin
+                    width: 160,
                     child: DropdownButtonFormField<String>(
-                      isExpanded: true,  // genişlik esnek 
+                      isExpanded: true,
                       value: selectedCategory,
                       hint: const Text("Category"),
                       items: categories.map((category) {
-                        return DropdownMenuItem<String>(  
+                        return DropdownMenuItem<String>(
                           value: category['key'],
                           child: Text(
                             category['label']!,
@@ -103,11 +106,11 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // Price Dropdown
+                  // Price
                   SizedBox(
-                    width: 160, // sabit genişlik 
+                    width: 160,
                     child: DropdownButtonFormField<String>(
-                      isExpanded: true, // genişliği esnek yapın
+                      isExpanded: true,
                       value: selectedPriceRange,
                       hint: const Text("Price"),
                       items: [
@@ -135,9 +138,9 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   ),
                   const SizedBox(width: 8),
 
-                  // WiFi Switch
+                  // WiFi
                   SizedBox(
-                    width: 160, // Sabit genişlik ekleyin
+                    width: 160,
                     child: SwitchListTile(
                       title: const Text("has WiFi "),
                       value: wifiOnly,
@@ -156,30 +159,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
             ),
           ),
 
-          // Minimum Rating Slider
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4),
-            child: Row(
-              children: [
-                const Text("Rate:", style: TextStyle(fontSize: 14)),
-                Expanded(
-                  child: Slider(
-                    label: minRating.toStringAsFixed(1),
-                    min: 0.0,
-                    max: 5.0,
-                    divisions: 10,
-                    value: minRating,
-                    onChanged: (value) {
-                      setState(() {
-                        minRating = value;
-                      });
-                    },
-                    onChangeEnd: (_) => fetchPlaces(),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          
 
           // Mekanlar listesi
           Expanded(
@@ -196,42 +176,50 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
 
                 final placeList = snapshot.data!;
                 return ListView.builder(
-                  itemCount: placeList.length,
-                  itemBuilder: (context, index) {
-                    final place = placeList[index];
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.pink.shade100,
-                        borderRadius: BorderRadius.circular(15),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 4,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: ListTile(
-                        leading: Icon(Icons.local_cafe, color: Colors.pink.shade700, size: 30),
-                        title: Text(
-                          place.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(place.location),
-                        trailing: const Icon(Icons.arrow_forward_ios),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlaceScreen(place: place),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                );
+  itemCount: placeList.length,
+  itemBuilder: (context, index) {
+    final place = placeList[index];
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.pink.shade100,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade300,
+            blurRadius: 4,
+            offset: Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ListTile(
+        leading: Icon(Icons.local_cafe, color: Colors.pink.shade700, size: 30),
+        title: Row(
+          children: [
+            Text(
+              place.name,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+           
+          ],
+        ),
+        subtitle: Text(place.location),
+        trailing: const Icon(Icons.arrow_forward_ios),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PlaceScreen(place: place),
+            ),
+          );
+        },
+      ),
+    );
+  },
+);
+
+
+
               },
             ),
           ),
