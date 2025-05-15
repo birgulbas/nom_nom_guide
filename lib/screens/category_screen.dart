@@ -39,6 +39,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
     }
   }
 
+
  void fetchPlaces() {
   final futurePlaces = ApiServices().getPlaces(
     category: selectedCategory,
@@ -67,21 +68,27 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
       appBar: AppBar(title: const Text('Places')),
       body: Column(
         children: [
+          
           // Kategori, fiyat ve WiFi
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8),
             child: SingleChildScrollView(
+             
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  
                   // Category
                   SizedBox(
+                    
                     width: 160,
                     child: DropdownButtonFormField<String>(
+                      
                       isExpanded: true,
                       value: selectedCategory,
                       hint: const Text("Category"),
                       items: categories.map((category) {
+                        
                         return DropdownMenuItem<String>(
                           value: category['key'],
                           child: Text(
@@ -106,10 +113,13 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
                   ),
                   const SizedBox(width: 8),
 
+                 
                   // Price
                   SizedBox(
-                    width: 160,
+                    width: 160, 
+                    
                     child: DropdownButtonFormField<String>(
+                      
                       isExpanded: true,
                       value: selectedPriceRange,
                       hint: const Text("Price"),
@@ -140,6 +150,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
 
                   // WiFi
                   SizedBox(
+                    
                     width: 160,
                     child: SwitchListTile(
                       title: const Text("has WiFi "),
@@ -176,6 +187,7 @@ class _CategoryPlaceScreenState extends State<CategoryPlaceScreen> {
 
                 final placeList = snapshot.data!;
                 return ListView.builder(
+                 
   itemCount: placeList.length,
   itemBuilder: (context, index) {
     final place = placeList[index];
