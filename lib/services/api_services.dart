@@ -4,12 +4,14 @@ import 'package:nom_nom_guide/models/place.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nom_nom_guide/models/review.dart';
 
+
 class ApiServices {
   // Base url apinin
 
  static String get baseUrl {
   return 'https://bitirmeprojesi-1xwg.onrender.com/api';
-}
+} 
+
 
 // Tokenı kaydet
   Future<void> saveToken(String token) async {
@@ -17,36 +19,44 @@ class ApiServices {
     await prefs.setString('token', token);
   }
 
-  // Kategorileri apiden çekme fonksiyonu
   Future<List<Map<String, String>>> getCategories() async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/categories/'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
+  final token = await getToken(); // Token'ı al
+  final response = await http.get(
+    Uri.parse('$baseUrl/categories/'),
+    headers: {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token', // Token'ı başlığa ekle
+    },
+  );
 
-    print('Kategori GET: ${response.statusCode}');
+  print('Kategori GET: ${response.statusCode}');
 
-    if (response.statusCode == 200) {
-      try {
-        final decodedBody = utf8.decode(response.bodyBytes); // Türkçe karakter desteği
-        List<dynamic> data = json.decode(decodedBody);
-        return data.map<Map<String, String>>((category) {
-          return {
-            'label': category['label'].toString(),
-            'key': category['key'].toString(),
-          };
-        }).toList();
-      } catch (e) {
-        print('Kategori verisi parse hatası: $e');
-        throw Exception('Category data could not be processed.');
+  if (response.statusCode == 200) {
+    try {
+      final decodedBody = utf8.decode(response.bodyBytes); // Türkçe karakter desteği
+      List<dynamic> data = json.decode(decodedBody);
+
+      // Eğer gelen veriler boşsa veya beklenmedik bir format varsa
+      if (data.isEmpty) {
+        throw Exception('No categories found.');
       }
-    } else {
-      print('Kategori yükleme başarısız: ${response.statusCode}');
-      throw Exception('Categories could not be loaded.');
+
+      return data.map<Map<String, String>>((category) {
+        return {
+          'label': category['label'].toString(),
+          'key': category['key'].toString(),
+        };
+      }).toList();
+    } catch (e) {
+      print('Kategori verisi parse hatası: $e');
+      throw Exception('Category data could not be processed.');
     }
+  } else {
+    print('Kategori yükleme başarısız: ${response.statusCode}');
+    throw Exception('Categories could not be loaded. Status code: ${response.statusCode}');
   }
+}
+
 
 
   // Mekanları kategori ve filtrelere göre çekme fonksiyonu
@@ -65,7 +75,7 @@ class ApiServices {
   if (searchQuery != null) queryParams['search'] = searchQuery;
   if (price != null) queryParams['price_range'] = price;
   if (hasWifi != null) queryParams['wifi'] = hasWifi.toString();
-  // minRating backend'e gönderilmeyecek — Flutter tarafında filtrelenecek
+  
 
   if (queryParams.isNotEmpty) {
     url += '?${Uri(queryParameters: queryParams).query}';

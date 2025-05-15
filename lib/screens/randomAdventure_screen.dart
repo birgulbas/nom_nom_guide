@@ -160,17 +160,7 @@ class _RandomAdventureScreenState extends State<RandomAdventureScreen> with Sing
                                   textAlign: TextAlign.center,
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.star, color: Colors.amber),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      selectedPlace!.rating.toStringAsFixed(1),
-                                      style: const TextStyle(fontSize: 18),
-                                    ),
-                                  ],
-                                ),
+                                
                               ],
                             ),
                           ),

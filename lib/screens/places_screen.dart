@@ -54,9 +54,12 @@ class _PlaceScreenState extends State<PlaceScreen> {
       setState(() {
         _reviews = reviewsList.map((review) => Review.fromJson(review)).toList();
       });
-      _calculateAverageRating();
     }
     setState(() {
+      isLoadingReviews = false;
+    });
+    _calculateAverageRating();
+      setState(() {
       isLoadingReviews = false;
     });
   }
@@ -183,8 +186,7 @@ _calculateAverageRating();
     }
 
     String? reviewsJson = prefs.getString('reviews_${widget.place.id}');
-    if (reviewsJson == null) return;
-
+  if (reviewsJson == null) return;
     List<dynamic> reviewsList = jsonDecode(reviewsJson);
     List<Review> allReviews = reviewsList.map((review) => Review.fromJson(review)).toList();
 

@@ -141,27 +141,6 @@ class _MapScreenState extends State<MapScreen> {
             backgroundColor: Colors.blue,
             child: const Icon(Icons.my_location),
           ),
-          const SizedBox(height: 16),
-          // Zoom in ve zoom out butonlar
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                zoomLevel += 1.0;  // zoom level art
-              });
-            },
-            backgroundColor: Colors.green,
-            child: const Icon(Icons.zoom_in),
-          ),
-          const SizedBox(height: 16),
-          FloatingActionButton(
-            onPressed: () {
-              setState(() {
-                zoomLevel -= 1.0;  // zoom level az
-              });
-            },
-            backgroundColor: Colors.red,
-            child: const Icon(Icons.zoom_out),
-          ),
         ],
       ),
     );
